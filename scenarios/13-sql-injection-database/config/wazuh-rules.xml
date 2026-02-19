@@ -1,0 +1,54 @@
+<!-- Scenario 13: SQL Injection Detection Rules for Wazuh -->
+<group name="wcace,sqli,web-attack,">
+
+  <rule id="100100" level="10">
+    <if_group>web|accesslog</if_group>
+    <match>UNION|SELECT|union|select</match>
+    <description>WCACE S13: SQL Injection attempt - UNION SELECT detected</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>attack,sqli,</group>
+  </rule>
+
+  <rule id="100101" level="10">
+    <if_group>web|accesslog</if_group>
+    <regex>OR\s+\d+=\d+|or\s+\d+=\d+</regex>
+    <description>WCACE S13: SQL Injection attempt - Boolean condition detected</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>attack,sqli,</group>
+  </rule>
+
+  <rule id="100102" level="12">
+    <if_group>web|accesslog</if_group>
+    <match>DROP TABLE|drop table|DELETE FROM|delete from</match>
+    <description>WCACE S13: SQL Injection - Destructive payload detected</description>
+    <mitre>
+      <id>T1190</id>
+      <id>T1485</id>
+    </mitre>
+    <group>attack,sqli,</group>
+  </rule>
+
+  <rule id="100103" level="8">
+    <if_group>web|accesslog</if_group>
+    <match>sqlmap</match>
+    <description>WCACE S13: SQL Injection tool (sqlmap) detected</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>attack,sqli,recon,</group>
+  </rule>
+
+  <rule id="100104" level="14" frequency="5" timeframe="60">
+    <if_matched_group>sqli</if_matched_group>
+    <description>WCACE S13: Multiple SQL Injection attempts - Active attack in progress</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>attack,sqli,</group>
+  </rule>
+
+</group>

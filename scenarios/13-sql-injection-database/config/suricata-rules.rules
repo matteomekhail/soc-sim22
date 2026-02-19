@@ -1,0 +1,9 @@
+# Scenario 13: SQL Injection Detection Rules for Suricata
+# These rules supplement the global rules in soc-stack/suricata/rules/local.rules
+
+alert http any any -> $SQL_SERVERS any (msg:"S13: SQL Injection - UNION SELECT"; flow:to_server,established; content:"UNION"; nocase; content:"SELECT"; nocase; distance:0; sid:9100001; rev:1; classtype:web-application-attack;)
+alert http any any -> $SQL_SERVERS any (msg:"S13: SQL Injection - OR 1=1"; flow:to_server,established; content:"OR"; nocase; pcre:"/OR\s+\d+=\d+/i"; sid:9100002; rev:1; classtype:web-application-attack;)
+alert http any any -> $SQL_SERVERS any (msg:"S13: SQL Injection - Comment Terminator"; flow:to_server,established; content:"--"; http_uri; sid:9100003; rev:1; classtype:web-application-attack;)
+alert http any any -> $SQL_SERVERS any (msg:"S13: SQL Injection - DROP/ALTER/DELETE"; flow:to_server,established; pcre:"/(DROP|ALTER|DELETE|TRUNCATE)\s+(TABLE|DATABASE)/i"; sid:9100004; rev:1; classtype:web-application-attack;)
+alert http any any -> $SQL_SERVERS any (msg:"S13: SQL Injection - sqlite_master access"; flow:to_server,established; content:"sqlite_master"; nocase; sid:9100005; rev:1; classtype:web-application-attack;)
+alert http any any -> $SQL_SERVERS any (msg:"S13: SQLMap User Agent Detected"; flow:to_server,established; content:"sqlmap"; http_user_agent; nocase; sid:9100006; rev:1; classtype:web-application-attack;)

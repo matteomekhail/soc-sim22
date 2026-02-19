@@ -1,0 +1,48 @@
+{
+  "scenario": "13-sql-injection-database",
+  "description": "Expected alerts from SQL injection attack simulation",
+  "expected_alerts": [
+    {
+      "source": "suricata",
+      "sid": 9000001,
+      "description": "SQL Injection - UNION SELECT",
+      "min_count": 3,
+      "severity": "critical"
+    },
+    {
+      "source": "suricata",
+      "sid": 9000002,
+      "description": "SQL Injection - OR 1=1",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "source": "suricata",
+      "sid": 9000003,
+      "description": "SQL Injection - Comment Injection",
+      "min_count": 5,
+      "severity": "high"
+    },
+    {
+      "source": "suricata",
+      "sid": 9000004,
+      "description": "SQL Injection - DROP TABLE",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100100,
+      "description": "SQL Injection attempt - UNION SELECT",
+      "min_count": 3,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100104,
+      "description": "Multiple SQL Injection attempts - Active attack",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}
