@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Secrets
+.env
+*.pem
+*.key
+
+# Logs (keep sample_logs, ignore runtime logs)
+*.log
+logs/*.pcap
+
+# Project-specific exclusions
+WCACE_Scenari_SOC.txt
+emai.txt
+*.eml
+*.msg
+email_*.txt
+robert_beutel_email*
