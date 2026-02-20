@@ -1,0 +1,4 @@
+# WCACE Scenario 08 - Encryption Key for Recovery
+# Generated: 2026-02-20T16:02:02.126928
+# Sandbox: /tmp/wcace-sandbox/victim-files
+key=HcjOqnGHUTQ_a2nN856286rD9iKasR9WXqaPkKW3Suw=

