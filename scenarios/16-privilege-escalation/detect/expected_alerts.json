@@ -1,0 +1,86 @@
+{
+  "scenario": "16-privilege-escalation",
+  "description": "Expected alerts from privilege escalation simulation - sudo abuse, SUID exploitation, root access, and backdoor creation",
+  "expected_alerts": [
+    {
+      "phase": "sudo_abuse",
+      "source": "wazuh",
+      "rule_id": 100540,
+      "description": "Unauthorized sudo attempt - user not in sudoers",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "sudo_abuse",
+      "source": "wazuh",
+      "rule_id": 100541,
+      "description": "Multiple unauthorized sudo attempts from same user",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "suid_exploitation",
+      "source": "suricata",
+      "sid": 9160001,
+      "description": "Outbound connection from host with privilege escalation",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "suid_exploitation",
+      "source": "wazuh",
+      "rule_id": 100542,
+      "description": "SUID binary enumeration detected",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "suid_exploitation",
+      "source": "wazuh",
+      "rule_id": 100543,
+      "description": "SUID binary exploited to gain root privileges",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "root_access",
+      "source": "wazuh",
+      "rule_id": 100544,
+      "description": "Root session opened by non-admin user",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "root_access",
+      "source": "wazuh",
+      "rule_id": 100545,
+      "description": "/etc/shadow accessed after privilege escalation",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "backdoor",
+      "source": "wazuh",
+      "rule_id": 100546,
+      "description": "New user account created with admin privileges",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "backdoor",
+      "source": "wazuh",
+      "rule_id": 100547,
+      "description": "Sudoers file modified with NOPASSWD entry",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "kill_chain",
+      "source": "wazuh",
+      "rule_id": 100548,
+      "description": "Privilege escalation kill chain - sudo abuse to root to backdoor",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}

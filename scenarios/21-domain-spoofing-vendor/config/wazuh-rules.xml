@@ -1,0 +1,170 @@
+<!--
+  Scenario 21: Domain Spoofing Vendor - Wazuh Custom Rules
+  =========================================================
+  Rule IDs: 100700 - 100749
+  Deploy to: /var/ossec/etc/rules/local_rules.xml (or a dedicated include file)
+  Restart Wazuh manager after deployment: systemctl restart wazuh-manager
+-->
+
+<group name="scenario_21,domain_spoofing,vendor_fraud,bec,">
+
+  <!-- ==================== DNS Detection ==================== -->
+
+  <!-- Detect DNS query to spoofed vendor domain -->
+  <rule id="100700" level="10">
+    <if_group>syslog</if_group>
+    <field name="query">g1obalparts-supply.test</field>
+    <description>SC21: DNS query to spoofed vendor domain (g1obalparts-supply.test)</description>
+    <mitre>
+      <id>T1583.001</id>
+    </mitre>
+    <group>dns,vendor_fraud,domain_spoofing,</group>
+  </rule>
+
+  <!-- DNS query to any domain resembling the legitimate vendor -->
+  <rule id="100701" level="8">
+    <if_group>syslog</if_group>
+    <field name="query">globalparts-supply|g1obalparts|gl0balparts</field>
+    <description>SC21: DNS query to domain resembling vendor (globalparts-supply variant)</description>
+    <mitre>
+      <id>T1583.001</id>
+    </mitre>
+    <group>dns,vendor_fraud,domain_spoofing,</group>
+  </rule>
+
+  <!-- ==================== Email Detection ==================== -->
+
+  <!-- Phishing email from spoofed vendor domain -->
+  <rule id="100710" level="12">
+    <if_group>syslog</if_group>
+    <field name="from">\S+@g1obalparts-supply\.test</field>
+    <description>SC21: Email from spoofed vendor domain (g1obalparts-supply.test)</description>
+    <mitre>
+      <id>T1036</id>
+      <id>T1566.002</id>
+    </mitre>
+    <group>email,vendor_fraud,phishing,</group>
+  </rule>
+
+  <!-- Email from spoofed vendor with SPF failure -->
+  <rule id="100711" level="14">
+    <if_group>syslog</if_group>
+    <field name="from">\S+@g1obalparts-supply\.test</field>
+    <field name="spf_result">fail</field>
+    <description>SC21: Spoofed vendor email with SPF failure</description>
+    <mitre>
+      <id>T1036</id>
+    </mitre>
+    <group>email,vendor_fraud,spf_failure,</group>
+  </rule>
+
+  <!-- Email with DMARC failure from vendor-lookalike domain -->
+  <rule id="100712" level="14">
+    <if_group>syslog</if_group>
+    <field name="from">\S+@g1obalparts-supply\.test</field>
+    <field name="dmarc_result">fail</field>
+    <description>SC21: Spoofed vendor email failed DMARC check</description>
+    <mitre>
+      <id>T1036</id>
+    </mitre>
+    <group>email,vendor_fraud,dmarc_failure,</group>
+  </rule>
+
+  <!-- ==================== Invoice / Payment Fraud Detection ==================== -->
+
+  <!-- Invoice email with updated bank details -->
+  <rule id="100720" level="14">
+    <field name="subject">invoice|payment</field>
+    <field name="from">\S+@g1obalparts-supply\.test</field>
+    <description>SC21: Invoice/payment email from spoofed vendor domain</description>
+    <mitre>
+      <id>T1036</id>
+      <id>T1565</id>
+    </mitre>
+    <group>vendor_fraud,invoice_fraud,</group>
+  </rule>
+
+  <!-- Payment processing event with mismatched vendor domain -->
+  <rule id="100721" level="15">
+    <field name="event_type">payment_processing</field>
+    <field name="vendor">g1obalparts-supply</field>
+    <description>SC21: Payment initiated referencing spoofed vendor domain</description>
+    <mitre>
+      <id>T1565</id>
+    </mitre>
+    <group>vendor_fraud,payment_fraud,critical,</group>
+  </rule>
+
+  <!-- Wire transfer to new/unknown bank account -->
+  <rule id="100722" level="15">
+    <field name="event_type">wire_transfer</field>
+    <field name="destination_bank">Offshore</field>
+    <description>SC21: Wire transfer to offshore bank (potential fraud)</description>
+    <mitre>
+      <id>T1565</id>
+    </mitre>
+    <group>vendor_fraud,payment_fraud,critical,</group>
+  </rule>
+
+  <!-- Payment anomaly: bank details mismatch -->
+  <rule id="100723" level="15">
+    <field name="event_type">payment_anomaly</field>
+    <description>SC21: Payment anomaly - vendor bank details mismatch detected</description>
+    <mitre>
+      <id>T1565</id>
+    </mitre>
+    <group>vendor_fraud,payment_anomaly,critical,</group>
+  </rule>
+
+  <!-- ==================== Reconnaissance Detection ==================== -->
+
+  <!-- OSINT / reconnaissance activity targeting vendor relationship -->
+  <rule id="100730" level="8">
+    <field name="event_type">reconnaissance</field>
+    <field name="vendor_identified">globalparts-supply</field>
+    <description>SC21: Reconnaissance activity targeting vendor relationship</description>
+    <mitre>
+      <id>T1583.001</id>
+    </mitre>
+    <group>reconnaissance,vendor_fraud,</group>
+  </rule>
+
+  <!-- ==================== Payment Approval Chain ==================== -->
+
+  <!-- Payment approval for spoofed vendor -->
+  <rule id="100735" level="12">
+    <field name="event_type">payment_approval</field>
+    <field name="vendor">g1obalparts-supply</field>
+    <description>SC21: Payment approved referencing spoofed vendor domain</description>
+    <mitre>
+      <id>T1565</id>
+    </mitre>
+    <group>vendor_fraud,payment_fraud,</group>
+  </rule>
+
+  <!-- ==================== Composite / Correlation Rules ==================== -->
+
+  <!-- Correlation: spoofed vendor email + payment processing -->
+  <rule id="100740" level="15">
+    <if_sid>100710</if_sid>
+    <same_field>vendor</same_field>
+    <description>SC21: CORRELATION - Spoofed vendor email followed by payment activity</description>
+    <mitre>
+      <id>T1036</id>
+      <id>T1565</id>
+    </mitre>
+    <group>correlation,vendor_fraud,payment_fraud,critical,</group>
+  </rule>
+
+  <!-- Domain age alert: newly registered vendor-lookalike domain -->
+  <rule id="100745" level="10">
+    <field name="event_type">domain_registration</field>
+    <field name="domain">g1obalparts-supply</field>
+    <description>SC21: Newly registered domain resembling known vendor</description>
+    <mitre>
+      <id>T1583.001</id>
+    </mitre>
+    <group>domain_spoofing,vendor_fraud,</group>
+  </rule>
+
+</group>

@@ -1,0 +1,100 @@
+{
+  "scenario": "04-insider-threat-data-exfiltration",
+  "description": "Expected behavioral alerts from insider threat data exfiltration simulation",
+  "detection_approach": "behavioral_anomaly",
+  "baseline_comparison": {
+    "normal_files_per_day": "5-8",
+    "normal_directories": ["projects"],
+    "normal_hours": "09:00-18:00",
+    "normal_transfer_size": "10KB-500KB per file"
+  },
+  "expected_alerts": [
+    {
+      "source": "wazuh",
+      "rule_id": 100400,
+      "description": "After-hours access to sensitive file share (HR/Finance/Executive)",
+      "min_count": 6,
+      "severity": "high",
+      "phase": "phase_2_afterhours_access",
+      "behavioral_indicator": "Time-based anomaly: access outside 09:00-18:00 window"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100401,
+      "description": "Bulk file access - volume exceeds normal baseline",
+      "min_count": 1,
+      "severity": "high",
+      "phase": "phase_3_bulk_download",
+      "behavioral_indicator": "Volume anomaly: 20+ file accesses in 10 minutes vs. baseline of 5-8/day"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100402,
+      "description": "Data staging - compression to temp directory",
+      "min_count": 3,
+      "severity": "high",
+      "phase": "phase_4_data_staging",
+      "behavioral_indicator": "Staging anomaly: tar/zip to /tmp with obfuscated filenames"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100403,
+      "description": "Large outbound HTTPS data transfer",
+      "min_count": 3,
+      "severity": "critical",
+      "phase": "phase_5_exfiltration",
+      "behavioral_indicator": "Transfer anomaly: large uploads to external IP"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100404,
+      "description": "Anomalous access to multiple sensitive directories",
+      "min_count": 1,
+      "severity": "high",
+      "phase": "phase_2_afterhours_access",
+      "behavioral_indicator": "Scope anomaly: HR + Finance + Executive in single session"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100405,
+      "description": "Multiple insider threat indicators correlated",
+      "min_count": 1,
+      "severity": "critical",
+      "phase": "correlation",
+      "behavioral_indicator": "Correlation: bulk_access + staging + exfiltration in 2-hour window"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100406,
+      "description": "Data exfiltration to external IP",
+      "min_count": 3,
+      "severity": "critical",
+      "phase": "phase_5_exfiltration",
+      "behavioral_indicator": "Exfiltration: upload to 203.0.113.x network"
+    },
+    {
+      "source": "suricata",
+      "sid": 9040001,
+      "description": "Large outbound HTTPS transfer (>10MB)",
+      "min_count": 3,
+      "severity": "high",
+      "phase": "phase_5_exfiltration"
+    },
+    {
+      "source": "suricata",
+      "sid": 9040002,
+      "description": "Multiple large HTTPS uploads in 10 minutes",
+      "min_count": 1,
+      "severity": "critical",
+      "phase": "phase_5_exfiltration"
+    },
+    {
+      "source": "suricata",
+      "sid": 9040004,
+      "description": "After-hours outbound HTTPS to external host",
+      "min_count": 1,
+      "severity": "high",
+      "phase": "phase_5_exfiltration"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+# Scenario 18: Drive-By Download Detection Rules for Suricata
+# These rules supplement the global rules in soc-stack/suricata/rules/local.rules
+
+# --- Exploit Kit Landing Page Detection ---
+
+alert http $EXTERNAL_NET any -> $HOME_NET any (msg:"S18: Exploit kit landing page - suspicious iframe redirect from ad network"; flow:to_client,established; content:"iframe"; http_server_body; content:"display|3a|none"; http_server_body; sid:9180001; rev:1; classtype:trojan-activity;)
+
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"S18: Exploit kit browser probing - multiple plugin version checks"; flow:to_server,established; content:"/check?p="; http_uri; detection_filter:track by_src, count 4, seconds 30; sid:9180002; rev:1; classtype:trojan-activity;)
+
+# --- Exploit Kit Exploitation ---
+
+alert http $EXTERNAL_NET any -> $HOME_NET any (msg:"S18: Exploit kit CVE exploit delivery detected"; flow:to_client,established; content:"exploit"; http_uri; content:"cve"; nocase; http_uri; sid:9180003; rev:1; classtype:trojan-activity;)
+
+# --- Drive-By Download ---
+
+alert http $EXTERNAL_NET any -> $HOME_NET any (msg:"S18: Drive-by download - executable file from exploit kit domain"; flow:to_client,established; content:"Content-Type|3a 20|application/x-msdownload"; http_header; sid:9180004; rev:1; classtype:trojan-activity;)
+
+alert http $EXTERNAL_NET any -> $HOME_NET any (msg:"S18: Suspicious PE download disguised as Windows update"; flow:to_client,established; content:"kb"; http_uri; content:".exe"; http_uri; sid:9180005; rev:1; classtype:trojan-activity;)
+
+# --- C2 Communication from Payload ---
+
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"S18: Drive-by payload C2 beacon to known malicious domain"; flow:to_server,established; content:"evil-cdn.test"; tls.sni; sid:9180006; rev:1; classtype:trojan-activity;)

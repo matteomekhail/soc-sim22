@@ -1,0 +1,100 @@
+<!-- Scenario 04: Insider Threat Data Exfiltration - Wazuh Rules -->
+<!-- Focus: Behavioral anomaly detection (deviation from baseline) -->
+<group name="wcace,insider_threat,data_exfiltration,">
+
+  <!-- Rule 100400: After-hours access to sensitive file shares -->
+  <!-- Behavioral: Normal users access files 09:00-18:00; after-hours access is anomalous -->
+  <rule id="100400" level="8">
+    <if_group>syslog|local0</if_group>
+    <regex>AUDIT: user=\S+ action=(read|list|copy)</regex>
+    <match>/shared/hr/|/shared/finance/|/shared/executive/</match>
+    <time>10pm - 6am</time>
+    <description>WCACE S04: After-hours access to sensitive file share (HR/Finance/Executive)</description>
+    <mitre>
+      <id>T1039</id>
+      <id>T1078</id>
+    </mitre>
+    <group>insider_threat,after_hours,</group>
+  </rule>
+
+  <!-- Rule 100401: Bulk file access exceeding normal baseline -->
+  <!-- Behavioral: >20 file access events in 10 minutes from a single user is anomalous -->
+  <rule id="100401" level="10" frequency="20" timeframe="600">
+    <if_matched_group>syslog|local0</if_matched_group>
+    <regex>AUDIT: user=\S+ action=(read|copy)</regex>
+    <description>WCACE S04: Bulk file access - volume exceeds normal baseline (20+ files in 10 min)</description>
+    <mitre>
+      <id>T1039</id>
+      <id>T1074</id>
+    </mitre>
+    <group>insider_threat,bulk_access,</group>
+  </rule>
+
+  <!-- Rule 100402: Data staging detected (compression/archiving) -->
+  <!-- Behavioral: Users creating tar/zip archives of sensitive data in /tmp -->
+  <rule id="100402" level="10">
+    <decoded_as>json</decoded_as>
+    <field name="event_type">process_execution</field>
+    <regex>tar|zip|7z|rar</regex>
+    <match>/tmp/|/var/tmp/|staging</match>
+    <description>WCACE S04: Data staging detected - compression of files to temp directory</description>
+    <mitre>
+      <id>T1074.001</id>
+    </mitre>
+    <group>insider_threat,data_staging,</group>
+  </rule>
+
+  <!-- Rule 100403: Large outbound data transfer via HTTPS -->
+  <!-- Behavioral: Single transfer >10MB to external host is unusual for most users -->
+  <rule id="100403" level="12">
+    <decoded_as>json</decoded_as>
+    <field name="event_type">data_transfer</field>
+    <field name="direction">upload</field>
+    <field name="protocol">HTTPS</field>
+    <description>WCACE S04: Large outbound HTTPS data transfer detected (possible exfiltration)</description>
+    <mitre>
+      <id>T1567</id>
+    </mitre>
+    <group>insider_threat,exfiltration,</group>
+  </rule>
+
+  <!-- Rule 100404: Access to multiple sensitive directories in short window -->
+  <!-- Behavioral: Accessing HR AND Finance AND Executive in same session is rare -->
+  <rule id="100404" level="10" frequency="3" timeframe="3600">
+    <if_matched_group>after_hours</if_matched_group>
+    <description>WCACE S04: Anomalous access to multiple sensitive directories in one session</description>
+    <mitre>
+      <id>T1039</id>
+    </mitre>
+    <group>insider_threat,recon,</group>
+  </rule>
+
+  <!-- Rule 100405: Correlation - Multiple insider threat indicators -->
+  <!-- Fires when bulk_access AND data_staging AND exfiltration all seen from same source -->
+  <rule id="100405" level="14" frequency="3" timeframe="7200">
+    <if_matched_group>insider_threat</if_matched_group>
+    <description>WCACE S04: CRITICAL - Multiple insider threat indicators correlated (bulk access + staging + exfiltration)</description>
+    <mitre>
+      <id>T1567</id>
+      <id>T1048</id>
+      <id>T1074</id>
+    </mitre>
+    <group>insider_threat,correlation,</group>
+  </rule>
+
+  <!-- Rule 100406: Data exfiltration to external IP -->
+  <!-- Behavioral: Upload to external IP from a user who accessed sensitive files -->
+  <rule id="100406" level="14">
+    <decoded_as>json</decoded_as>
+    <field name="event_type">data_transfer</field>
+    <field name="direction">upload</field>
+    <regex>203\.0\.113\.\d+</regex>
+    <description>WCACE S04: Data exfiltration to external IP detected</description>
+    <mitre>
+      <id>T1567</id>
+      <id>T1048</id>
+    </mitre>
+    <group>insider_threat,exfiltration,critical,</group>
+  </rule>
+
+</group>

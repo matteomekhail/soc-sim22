@@ -1,0 +1,90 @@
+{
+  "scenario": "10-apt-remote-access-trojan",
+  "description": "Expected alerts from APT Remote Access Trojan simulation",
+  "expected_alerts": [
+    {
+      "source": "suricata",
+      "sid": 9100001,
+      "description": "RAT C2 - Regular interval HTTPS beaconing",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "suricata",
+      "sid": 9100003,
+      "description": "RAT C2 - Command channel activity",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "suricata",
+      "sid": 9100004,
+      "description": "RAT - Data exfiltration over C2 channel",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "source": "suricata",
+      "sid": 9100005,
+      "description": "RAT - C2 domain DNS lookup",
+      "min_count": 1,
+      "severity": "medium"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100460,
+      "description": "Suspicious Python process from document handler",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100461,
+      "description": "RAT installation with persistence",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100462,
+      "description": "C2 beaconing pattern - regular interval callbacks",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100463,
+      "description": "RAT command execution via C2",
+      "min_count": 5,
+      "severity": "critical"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100464,
+      "description": "Credential access via RAT",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100466,
+      "description": "Data exfiltration over C2 channel",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100467,
+      "description": "Keylogger or screen capture activity",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100469,
+      "description": "APT RAT campaign correlated",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}

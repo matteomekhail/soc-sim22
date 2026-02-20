@@ -1,0 +1,94 @@
+{
+  "scenario": "18-drive-by-download",
+  "description": "Expected alerts from drive-by download simulation - compromised ad, exploit kit, download, payload execution",
+  "expected_alerts": [
+    {
+      "phase": "compromised_ad",
+      "source": "wazuh",
+      "rule_id": 100560,
+      "description": "Suspicious ad network content - hidden iframe detected",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "iframe_redirect",
+      "source": "suricata",
+      "sid": 9180001,
+      "description": "Exploit kit landing page - suspicious iframe redirect",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "iframe_redirect",
+      "source": "wazuh",
+      "rule_id": 100561,
+      "description": "Hidden iframe redirect to exploit kit domain",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "browser_probing",
+      "source": "suricata",
+      "sid": 9180002,
+      "description": "Exploit kit browser probing - plugin version checks",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "browser_probing",
+      "source": "wazuh",
+      "rule_id": 100562,
+      "description": "Exploit kit browser fingerprinting detected",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "download",
+      "source": "suricata",
+      "sid": 9180004,
+      "description": "Drive-by download - executable from exploit kit domain",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "download",
+      "source": "wazuh",
+      "rule_id": 100564,
+      "description": "Drive-by download detected - executable from suspicious source",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "execution",
+      "source": "wazuh",
+      "rule_id": 100566,
+      "description": "Suspicious process launched by browser",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "c2",
+      "source": "suricata",
+      "sid": 9180006,
+      "description": "Drive-by payload C2 beacon to malicious domain",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "c2",
+      "source": "wazuh",
+      "rule_id": 100567,
+      "description": "C2 communication from drive-by download payload",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "kill_chain",
+      "source": "wazuh",
+      "rule_id": 100568,
+      "description": "Drive-by download kill chain - ad to exploit to payload",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}

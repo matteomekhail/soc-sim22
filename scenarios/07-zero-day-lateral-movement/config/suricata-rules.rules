@@ -1,0 +1,17 @@
+# Scenario 07: Zero-Day Exploit & Lateral Movement Detection Rules for Suricata
+# These rules supplement the global rules in soc-stack/suricata/rules/local.rules
+
+# Detect internal network scanning from DMZ hosts (anomalous behavior)
+alert tcp $DMZ_NET any -> $HOME_NET any (msg:"S07: Zero-Day - Internal scan from DMZ host"; flags:S; threshold:type both, track by_src, count 20, seconds 60; sid:9070001; rev:1; classtype:attempted-recon; metadata:mitre_technique T1018;)
+
+# Detect sequential SSH connections from same source to multiple internal hosts
+alert tcp any any -> $HOME_NET 22 (msg:"S07: Lateral Movement - Sequential SSH access pattern"; flow:to_server,established; threshold:type both, track by_src, count 3, seconds 600; sid:9070002; rev:1; classtype:attempted-admin; metadata:mitre_technique T1021;)
+
+# Detect SMB administrative share access (C$, ADMIN$)
+alert tcp any any -> $HOME_NET 445 (msg:"S07: Lateral Movement - SMB admin share access"; flow:to_server,established; content:"|ff|SMB"; content:"C$"; nocase; sid:9070003; rev:1; classtype:attempted-admin; metadata:mitre_technique T1021;)
+
+# Detect mass credential extraction from domain controller
+alert tcp any any -> $HOME_NET 389 (msg:"S07: Domain Compromise - Mass LDAP query to DC"; flow:to_server,established; threshold:type both, track by_src, count 10, seconds 120; sid:9070004; rev:1; classtype:attempted-admin; metadata:mitre_technique T1003;)
+
+# Detect GPO modification from non-standard source
+alert tcp $DMZ_NET any -> $HOME_NET 445 (msg:"S07: Domain Compromise - GPO modification from DMZ"; flow:to_server,established; content:"SYSVOL"; nocase; sid:9070005; rev:1; classtype:policy-violation; metadata:mitre_technique T1068;)

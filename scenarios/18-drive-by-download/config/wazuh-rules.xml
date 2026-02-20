@@ -1,0 +1,111 @@
+<!-- Scenario 18: Drive-By Download Detection Rules for Wazuh -->
+<group name="wcace,drive_by,exploit_kit,">
+
+  <!-- Ad Network: Suspicious ad content with hidden iframe -->
+  <rule id="100560" level="10">
+    <if_group>web_log</if_group>
+    <match>iframe</match>
+    <regex>display.*none|width.*0|height.*0</regex>
+    <description>WCACE S18: Suspicious ad network content - hidden iframe detected in ad response</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>drive_by,ad_network,</group>
+  </rule>
+
+  <!-- Redirect: Hidden iframe redirect to suspicious domain -->
+  <rule id="100561" level="11">
+    <if_group>web_log</if_group>
+    <match>exploitkit|exploit-kit|gate.</match>
+    <description>WCACE S18: Hidden iframe redirect to known exploit kit domain</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>drive_by,exploit_kit,</group>
+  </rule>
+
+  <!-- Exploit Kit: Browser fingerprinting / plugin probing -->
+  <rule id="100562" level="12" frequency="4" timeframe="30">
+    <if_group>web_log</if_group>
+    <match>/check?p=</match>
+    <same_source_ip />
+    <description>WCACE S18: Exploit kit browser fingerprinting - multiple plugin version probes</description>
+    <mitre>
+      <id>T1203</id>
+    </mitre>
+    <group>drive_by,exploit_kit,</group>
+  </rule>
+
+  <!-- Exploit Kit: Vulnerability exploit attempt -->
+  <rule id="100563" level="14">
+    <if_group>web_log</if_group>
+    <regex>CVE-\d{4}-\d+</regex>
+    <match>exploit|vuln</match>
+    <description>WCACE S18: Exploit kit targeting specific CVE vulnerability</description>
+    <mitre>
+      <id>T1203</id>
+    </mitre>
+    <group>drive_by,exploit_kit,</group>
+  </rule>
+
+  <!-- Download: Drive-by executable download from exploit kit -->
+  <rule id="100564" level="14">
+    <if_group>web_log</if_group>
+    <regex>\.exe|\.dll|\.scr|\.msi</regex>
+    <match>application/x-msdownload|application/octet-stream</match>
+    <description>WCACE S18: Drive-by download detected - executable file from suspicious source</description>
+    <mitre>
+      <id>T1189</id>
+      <id>T1203</id>
+    </mitre>
+    <group>drive_by,download,</group>
+  </rule>
+
+  <!-- FIM: Suspicious executable created in temp directory -->
+  <rule id="100565" level="13">
+    <if_group>syscheck</if_group>
+    <regex>AppData.*Temp.*\.exe|tmp.*\.exe</regex>
+    <description>WCACE S18: Executable file created in temp directory - possible drive-by payload</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>drive_by,payload,</group>
+  </rule>
+
+  <!-- Process: Suspicious process launched by browser -->
+  <rule id="100566" level="13">
+    <if_group>process_monitor</if_group>
+    <match>chrome.exe|firefox.exe|iexplore.exe|msedge.exe</match>
+    <regex>\.exe|cmd\.exe|powershell</regex>
+    <description>WCACE S18: Suspicious child process launched by browser - possible drive-by execution</description>
+    <mitre>
+      <id>T1203</id>
+      <id>T1204.002</id>
+    </mitre>
+    <group>drive_by,execution,</group>
+  </rule>
+
+  <!-- C2: Communication from drive-by payload to C2 server -->
+  <rule id="100567" level="13">
+    <if_group>firewall</if_group>
+    <match>203.0.113.100</match>
+    <description>WCACE S18: C2 communication from drive-by download payload detected</description>
+    <mitre>
+      <id>T1071.001</id>
+    </mitre>
+    <group>drive_by,c2,</group>
+  </rule>
+
+  <!-- Correlation: Full drive-by download kill chain -->
+  <rule id="100568" level="15" frequency="3" timeframe="300">
+    <if_matched_group>drive_by</if_matched_group>
+    <description>WCACE S18: Drive-by download kill chain detected - ad compromise to payload execution</description>
+    <mitre>
+      <id>T1189</id>
+      <id>T1203</id>
+      <id>T1071.001</id>
+    </mitre>
+    <group>drive_by,kill_chain,</group>
+  </rule>
+
+</group>

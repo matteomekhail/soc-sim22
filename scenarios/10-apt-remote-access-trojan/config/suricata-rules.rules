@@ -1,0 +1,17 @@
+# Scenario 10: APT Remote Access Trojan Detection Rules for Suricata
+# These rules supplement the global rules in soc-stack/suricata/rules/local.rules
+
+# Detect regular-interval HTTPS beaconing pattern (C2 callback)
+alert tls $HOME_NET any -> $EXTERNAL_NET 443 (msg:"S10: RAT C2 - Regular interval HTTPS beaconing"; flow:to_server,established; threshold:type both, track by_src, count 10, seconds 700; sid:9100001; rev:1; classtype:trojan-activity; metadata:mitre_technique T1071;)
+
+# Detect Python-based RAT process spawned from document handler
+alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"S10: RAT - Suspicious outbound connection from Python child of office app"; flow:to_server,established; threshold:type both, track by_src, count 1, seconds 60; sid:9100002; rev:1; classtype:trojan-activity; metadata:mitre_technique T1219;)
+
+# Detect C2 command channel traffic (multiple POST requests to same C2 host)
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"S10: RAT C2 - Command channel activity"; flow:to_server,established; content:"POST"; http_method; pcre:"/(check-update|telemetry|heartbeat|upload)/i"; threshold:type both, track by_src, count 5, seconds 600; sid:9100003; rev:1; classtype:trojan-activity; metadata:mitre_technique T1219;)
+
+# Detect data exfiltration over C2 HTTPS channel (large uploads)
+alert tls $HOME_NET any -> $EXTERNAL_NET 443 (msg:"S10: RAT - Data exfiltration over C2 channel"; flow:to_server,established; threshold:type both, track by_src, count 3, seconds 300; sid:9100004; rev:1; classtype:trojan-activity; metadata:mitre_technique T1041;)
+
+# Detect known RAT C2 domain in DNS query
+alert dns $HOME_NET any -> any 53 (msg:"S10: RAT - C2 domain DNS lookup"; dns.query; content:"evil-cdn"; nocase; sid:9100005; rev:1; classtype:trojan-activity; metadata:mitre_technique T1071;)

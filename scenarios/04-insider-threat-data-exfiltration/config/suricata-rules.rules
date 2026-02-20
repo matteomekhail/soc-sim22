@@ -1,0 +1,20 @@
+# Scenario 04: Insider Threat Data Exfiltration - Suricata Rules
+# Focus: Detecting anomalous outbound data transfers indicative of exfiltration
+# These rules supplement the global rules in soc-stack/suricata/rules/local.rules
+
+# Rule 1: Single large outbound HTTPS transfer (>10MB threshold)
+# Normal internal users rarely upload >10MB to external hosts via HTTPS.
+alert tls $HOME_NET any -> $EXTERNAL_NET 443 (msg:"S04: Large outbound HTTPS transfer (>10MB) - possible exfiltration"; flow:to_server,established; dsize:>10000000; threshold:type threshold, track by_src, count 1, seconds 300; sid:9040001; rev:1; classtype:policy-violation; metadata:mitre_technique T1567;)
+
+# Rule 2: Multiple large HTTPS uploads in short window
+# An insider staging exfiltration will make several large uploads in sequence.
+alert tls $HOME_NET any -> $EXTERNAL_NET 443 (msg:"S04: Multiple large HTTPS uploads in 10 minutes - bulk exfiltration indicator"; flow:to_server,established; dsize:>1000000; threshold:type both, track by_src, count 3, seconds 600; sid:9040002; rev:1; classtype:policy-violation; metadata:mitre_technique T1567;)
+
+# Rule 3: Outbound data transfer with high sent-to-received ratio
+# Exfiltration uploads have very asymmetric traffic: lots sent, little received.
+alert tcp $HOME_NET any -> $EXTERNAL_NET 443 (msg:"S04: Asymmetric outbound HTTPS session - data exfiltration indicator"; flow:to_server,established; dsize:>5000000; threshold:type threshold, track by_src, count 1, seconds 60; sid:9040003; rev:1; classtype:policy-violation; metadata:mitre_technique T1048;)
+
+# Rule 4: After-hours outbound HTTPS to previously unseen external IP
+# Combines temporal and destination anomaly. Requires external IP reputation feed
+# or first-seen tracking. Logged as informational for correlation.
+alert tls $HOME_NET any -> $EXTERNAL_NET 443 (msg:"S04: After-hours outbound HTTPS to external host - insider threat indicator"; flow:to_server,established; threshold:type limit, track by_src, count 1, seconds 3600; sid:9040004; rev:1; classtype:policy-violation; metadata:mitre_technique T1048;)

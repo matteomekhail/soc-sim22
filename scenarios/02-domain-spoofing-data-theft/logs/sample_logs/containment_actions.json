@@ -1,0 +1,19 @@
+{"timestamp": "2026-02-20T11:09:59.812149Z", "action": "dns_sinkhole", "domain": "acmec0rp.local", "sinkhole_ip": "0.0.0.0", "dns_server": "10.0.0.50"}
+{"timestamp": "2026-02-20T11:09:59.812268Z", "action": "dns_sinkhole", "domain": "acmecorp-login.test", "sinkhole_ip": "0.0.0.0", "dns_server": "10.0.0.50"}
+{"timestamp": "2026-02-20T11:10:00.017004Z", "action": "firewall_block_ip", "ip": "203.0.113.50", "direction": "both", "rule": "DROP"}
+{"timestamp": "2026-02-20T11:10:00.017049Z", "action": "block", "domain": "acmecorp-login.test"}
+{"timestamp": "2026-02-20T11:10:00.017078Z", "action": "block", "domain": "acmec0rp.local"}
+{"timestamp": "2026-02-20T11:10:00.017101Z", "action": "firewall_block_port", "ip": "203.0.113.50", "port": 8443, "direction": "outbound", "rule": "DROP"}
+{"timestamp": "2026-02-20T11:10:00.217434Z", "action": "credential_reset", "user": "john.doe@acmecorp.local", "method": "forced_reset", "mfa_re_enrollment": true}
+{"timestamp": "2026-02-20T11:10:00.217468Z", "action": "credential_reset", "user": "jane.smith@acmecorp.local", "method": "forced_reset", "mfa_re_enrollment": true}
+{"timestamp": "2026-02-20T11:10:00.217500Z", "action": "credential_reset", "user": "bob.wilson@acmecorp.local", "method": "forced_reset", "mfa_re_enrollment": true}
+{"timestamp": "2026-02-20T11:10:00.217530Z", "action": "credential_reset", "user": "alice.chen@acmecorp.local", "method": "forced_reset", "mfa_re_enrollment": true}
+{"timestamp": "2026-02-20T11:10:00.421238Z", "action": "session_revocation", "user": "john.doe@acmecorp.local", "sessions_revoked": "all", "oauth_tokens_revoked": true, "vpn_sessions_terminated": true}
+{"timestamp": "2026-02-20T11:10:00.421451Z", "action": "session_revocation", "user": "jane.smith@acmecorp.local", "sessions_revoked": "all", "oauth_tokens_revoked": true, "vpn_sessions_terminated": true}
+{"timestamp": "2026-02-20T11:10:00.421604Z", "action": "session_revocation", "user": "bob.wilson@acmecorp.local", "sessions_revoked": "all", "oauth_tokens_revoked": true, "vpn_sessions_terminated": true}
+{"timestamp": "2026-02-20T11:10:00.421745Z", "action": "session_revocation", "user": "alice.chen@acmecorp.local", "sessions_revoked": "all", "oauth_tokens_revoked": true, "vpn_sessions_terminated": true}
+{"timestamp": "2026-02-20T11:10:00.421879Z", "action": "session_revocation_by_ip", "src_ip": "203.0.113.50", "sessions_terminated": "all"}
+{"timestamp": "2026-02-20T11:10:00.624191Z", "action": "quarantine", "search_criteria": "from:*@acmec0rp.local", "scope": "all_mailboxes"}
+{"timestamp": "2026-02-20T11:10:00.624300Z", "action": "quarantine", "search_criteria": "contains:acmecorp-login.test", "scope": "all_mailboxes"}
+{"timestamp": "2026-02-20T11:10:00.624378Z", "action": "quarantine", "search_criteria": "subject:'Mandatory Password Reset'", "scope": "all_mailboxes"}
+{"timestamp": "2026-02-20T11:10:00.624457Z", "action": "reject", "domain": "acmec0rp.local"}

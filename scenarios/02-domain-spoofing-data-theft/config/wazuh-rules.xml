@@ -1,0 +1,172 @@
+<!--
+  Scenario 02: Domain Spoofing & Data Theft - Wazuh Custom Rules
+  ================================================================
+  Rule IDs: 100200 - 100249
+  Deploy to: /var/ossec/etc/rules/local_rules.xml (or a dedicated include file)
+  Restart Wazuh manager after deployment: systemctl restart wazuh-manager
+-->
+
+<group name="scenario_02,domain_spoofing,phishing,">
+
+  <!-- ==================== DNS Detection ==================== -->
+
+  <!-- Detect DNS query to spoofed lookalike domain -->
+  <rule id="100200" level="10">
+    <if_group>syslog</if_group>
+    <field name="query">acmec0rp.local</field>
+    <description>SC02: DNS query to spoofed lookalike domain (acmec0rp.local)</description>
+    <mitre>
+      <id>T1583.001</id>
+    </mitre>
+    <group>dns,phishing,domain_spoofing,</group>
+  </rule>
+
+  <!-- Detect DNS query to phishing domain -->
+  <rule id="100201" level="10">
+    <if_group>syslog</if_group>
+    <field name="query">acmecorp-login.test</field>
+    <description>SC02: DNS query to phishing domain (acmecorp-login.test)</description>
+    <mitre>
+      <id>T1566.002</id>
+    </mitre>
+    <group>dns,phishing,domain_spoofing,</group>
+  </rule>
+
+  <!-- ==================== Email Detection ==================== -->
+
+  <!-- Phishing email from spoofed domain with SPF failure -->
+  <rule id="100210" level="12">
+    <if_group>syslog</if_group>
+    <field name="from">\S+@acmec0rp\.local</field>
+    <field name="spf_result">fail</field>
+    <description>SC02: Phishing email from spoofed domain with SPF failure</description>
+    <mitre>
+      <id>T1566.002</id>
+    </mitre>
+    <group>email,phishing,spf_failure,</group>
+  </rule>
+
+  <!-- Email with DMARC failure from lookalike domain -->
+  <rule id="100211" level="12">
+    <if_group>syslog</if_group>
+    <field name="from">\S+@acmec0rp\.local</field>
+    <field name="dmarc_result">fail</field>
+    <description>SC02: Email from lookalike domain failed DMARC check</description>
+    <mitre>
+      <id>T1566.002</id>
+    </mitre>
+    <group>email,phishing,dmarc_failure,</group>
+  </rule>
+
+  <!-- ==================== Credential Harvesting Detection ==================== -->
+
+  <!-- HTTP POST to phishing login page -->
+  <rule id="100220" level="14">
+    <if_group>web</if_group>
+    <field name="method">POST</field>
+    <field name="path">acmecorp-login.test</field>
+    <description>SC02: Credential submission detected on phishing site</description>
+    <mitre>
+      <id>T1078</id>
+    </mitre>
+    <group>credential_theft,phishing,</group>
+  </rule>
+
+  <!-- Credential harvest event from simulation logs -->
+  <rule id="100221" level="15">
+    <field name="event_type">credential_harvest</field>
+    <field name="event">credentials_captured</field>
+    <description>SC02: Credentials captured by phishing site</description>
+    <mitre>
+      <id>T1078</id>
+    </mitre>
+    <group>credential_theft,phishing,critical,</group>
+  </rule>
+
+  <!-- ==================== Anomalous Authentication ==================== -->
+
+  <!-- Successful login from external/attacker IP -->
+  <rule id="100225" level="14">
+    <if_group>authentication_success</if_group>
+    <srcip>203.0.113.0/24</srcip>
+    <description>SC02: Successful login from external attacker subnet</description>
+    <mitre>
+      <id>T1078</id>
+    </mitre>
+    <group>authentication,anomaly,credential_theft,</group>
+  </rule>
+
+  <!-- Login anomaly - new external IP for known user -->
+  <rule id="100226" level="12">
+    <field name="event_type">authentication</field>
+    <field name="anomaly">\S+</field>
+    <description>SC02: Authentication anomaly detected - unusual login location</description>
+    <mitre>
+      <id>T1078</id>
+    </mitre>
+    <group>authentication,anomaly,</group>
+  </rule>
+
+  <!-- ==================== Data Exfiltration Detection ==================== -->
+
+  <!-- Large outbound data transfer to external IP -->
+  <rule id="100230" level="13">
+    <field name="event_type">data_transfer_anomaly</field>
+    <description>SC02: Anomalous large outbound data transfer detected</description>
+    <mitre>
+      <id>T1041</id>
+    </mitre>
+    <group>data_exfiltration,anomaly,</group>
+  </rule>
+
+  <!-- File access followed by external transfer -->
+  <rule id="100231" level="12">
+    <field name="event_type">data_transfer</field>
+    <field name="dst_ip">203.0.113.</field>
+    <description>SC02: Data transfer to attacker-controlled external IP</description>
+    <mitre>
+      <id>T1041</id>
+    </mitre>
+    <group>data_exfiltration,</group>
+  </rule>
+
+  <!-- Sensitive file access by compromised account -->
+  <rule id="100232" level="10">
+    <field name="event_type">data_access</field>
+    <field name="action">download</field>
+    <match>finance|hr|engineering|legal|executive</match>
+    <description>SC02: Sensitive file downloaded - potential data theft</description>
+    <mitre>
+      <id>T1041</id>
+    </mitre>
+    <group>data_access,sensitive_file,</group>
+  </rule>
+
+  <!-- ==================== Site Cloning Detection ==================== -->
+
+  <!-- HTTrack or other cloning tools accessing our site -->
+  <rule id="100240" level="8">
+    <if_group>web</if_group>
+    <field name="user_agent">HTTrack</field>
+    <description>SC02: Website cloning tool (HTTrack) detected scraping login page</description>
+    <mitre>
+      <id>T1583.001</id>
+    </mitre>
+    <group>reconnaissance,web_scraping,</group>
+  </rule>
+
+  <!-- ==================== Composite / Correlation Rules ==================== -->
+
+  <!-- Correlation: phishing email followed by credential capture -->
+  <rule id="100245" level="15">
+    <if_sid>100210</if_sid>
+    <same_field>to</same_field>
+    <description>SC02: CORRELATION - Phishing email recipient's credentials likely compromised</description>
+    <mitre>
+      <id>T1566.002</id>
+      <id>T1078</id>
+    </mitre>
+    <group>correlation,phishing,credential_theft,critical,</group>
+  </rule>
+
+</group>

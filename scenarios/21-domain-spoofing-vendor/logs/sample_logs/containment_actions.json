@@ -1,0 +1,18 @@
+{"timestamp": "2026-02-20T11:10:01.695273Z", "action": "dns_sinkhole", "domain": "g1obalparts-supply.test", "sinkhole_ip": "0.0.0.0", "dns_server": "10.0.0.50"}
+{"timestamp": "2026-02-20T11:10:01.897505Z", "action": "firewall_block_ip", "ip": "203.0.113.50", "direction": "both", "rule": "DROP"}
+{"timestamp": "2026-02-20T11:10:01.897570Z", "action": "block", "domain": "g1obalparts-supply.test"}
+{"timestamp": "2026-02-20T11:10:01.897618Z", "action": "reject", "domain": "g1obalparts-supply.test"}
+{"timestamp": "2026-02-20T11:10:02.103770Z", "action": "fraud_alert_sent", "recipient": "cfo@acmecorp.local", "alert_type": "vendor_impersonation_fraud", "spoofed_domain": "g1obalparts-supply.test", "legitimate_domain": "globalparts-supply.test", "channel": "phone_and_email"}
+{"timestamp": "2026-02-20T11:10:02.103850Z", "action": "fraud_alert_sent", "recipient": "jane.smith@acmecorp.local", "alert_type": "vendor_impersonation_fraud", "spoofed_domain": "g1obalparts-supply.test", "legitimate_domain": "globalparts-supply.test", "channel": "phone_and_email"}
+{"timestamp": "2026-02-20T11:10:02.103892Z", "action": "fraud_alert_sent", "recipient": "carlos.garcia@acmecorp.local", "alert_type": "vendor_impersonation_fraud", "spoofed_domain": "g1obalparts-supply.test", "legitimate_domain": "globalparts-supply.test", "channel": "phone_and_email"}
+{"timestamp": "2026-02-20T11:10:02.103927Z", "action": "fraud_alert_sent", "recipient": "emma.johnson@acmecorp.local", "alert_type": "vendor_impersonation_fraud", "spoofed_domain": "g1obalparts-supply.test", "legitimate_domain": "globalparts-supply.test", "channel": "phone_and_email"}
+{"timestamp": "2026-02-20T11:10:02.103966Z", "action": "payment_freeze", "scope": "all_pending", "vendor_filter": "g1obalparts-supply.test", "status": "frozen", "reason": "Suspected vendor domain impersonation fraud"}
+{"timestamp": "2026-02-20T11:10:02.104008Z", "action": "bank_account_flag", "bank": "Offshore Trust Bank", "account": "****8912", "routing": "091000019", "status": "flagged_fraudulent"}
+{"timestamp": "2026-02-20T11:10:02.305244Z", "action": "quarantine", "search_criteria": "from:*@g1obalparts-supply.test", "scope": "all_mailboxes"}
+{"timestamp": "2026-02-20T11:10:02.305366Z", "action": "quarantine", "search_criteria": "subject:'Updated Payment Instructions'", "scope": "all_mailboxes"}
+{"timestamp": "2026-02-20T11:10:02.305459Z", "action": "quarantine", "search_criteria": "subject:'Outstanding Invoices'", "scope": "all_mailboxes"}
+{"timestamp": "2026-02-20T11:10:02.305533Z", "action": "quarantine", "search_criteria": "contains:g1obalparts-supply.test", "scope": "all_mailboxes"}
+{"timestamp": "2026-02-20T11:10:02.508003Z", "action": "vendor_notification", "vendor_domain": "globalparts-supply.test", "contact_method": "phone_and_verified_email", "reason": "Domain impersonation detected", "spoofed_domain": "g1obalparts-supply.test", "recommendation": "File domain abuse complaint with registrar"}
+{"timestamp": "2026-02-20T11:10:02.508079Z", "action": "wire_recall", "status": "initiated", "destination_bank": "Offshore Trust Bank", "destination_account": "****8912", "reason": "Fraudulent wire transfer - vendor impersonation", "law_enforcement_notified": true}
+{"timestamp": "2026-02-20T11:10:02.508129Z", "action": "domain_abuse_report", "domain": "g1obalparts-supply.test", "registrar": "shady-registrar.test", "reason": "Domain registered for vendor impersonation and payment fraud", "evidence_preserved": true}
+{"timestamp": "2026-02-20T11:10:02.508176Z", "action": "law_enforcement_notification", "agency": "FBI IC3", "report_type": "Business Email Compromise", "spoofed_domain": "g1obalparts-supply.test", "attacker_ip": "203.0.113.50", "financial_loss_potential": true}

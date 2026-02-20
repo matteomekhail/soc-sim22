@@ -1,0 +1,146 @@
+{
+  "scenario": "21-domain-spoofing-vendor",
+  "description": "Expected alerts for the vendor domain spoofing and payment fraud simulation",
+  "mitre_techniques": ["T1583.001", "T1036", "T1566.002", "T1565"],
+  "alerts": [
+    {
+      "alert_id": "SC21-DNS-001",
+      "source": "suricata",
+      "rule_id": 2002101,
+      "description": "DNS query for spoofed vendor domain g1obalparts-supply.test",
+      "severity": "high",
+      "phase": 1,
+      "mitre_technique": "T1583.001",
+      "expected_fields": {
+        "query": "g1obalparts-supply.test"
+      }
+    },
+    {
+      "alert_id": "SC21-WAZUH-001",
+      "source": "wazuh",
+      "rule_id": 100700,
+      "description": "DNS query to spoofed vendor domain",
+      "severity": "high",
+      "phase": 1,
+      "mitre_technique": "T1583.001",
+      "expected_fields": {
+        "query": "g1obalparts-supply.test"
+      }
+    },
+    {
+      "alert_id": "SC21-WAZUH-002",
+      "source": "wazuh",
+      "rule_id": 100710,
+      "description": "Email from spoofed vendor domain",
+      "severity": "high",
+      "phase": 2,
+      "mitre_technique": "T1036",
+      "expected_fields": {
+        "from": "*@g1obalparts-supply.test"
+      }
+    },
+    {
+      "alert_id": "SC21-WAZUH-003",
+      "source": "wazuh",
+      "rule_id": 100711,
+      "description": "Spoofed vendor email with SPF failure",
+      "severity": "critical",
+      "phase": 2,
+      "mitre_technique": "T1036",
+      "expected_fields": {
+        "from": "*@g1obalparts-supply.test",
+        "spf_result": "fail"
+      }
+    },
+    {
+      "alert_id": "SC21-WAZUH-004",
+      "source": "wazuh",
+      "rule_id": 100721,
+      "description": "Payment initiated referencing spoofed vendor domain",
+      "severity": "critical",
+      "phase": 3,
+      "mitre_technique": "T1565",
+      "expected_fields": {
+        "event_type": "payment_processing",
+        "vendor": "g1obalparts-supply.test"
+      }
+    },
+    {
+      "alert_id": "SC21-WAZUH-005",
+      "source": "wazuh",
+      "rule_id": 100722,
+      "description": "Wire transfer to offshore bank",
+      "severity": "critical",
+      "phase": 3,
+      "mitre_technique": "T1565",
+      "expected_fields": {
+        "event_type": "wire_transfer",
+        "destination_bank": "Offshore Trust Bank"
+      }
+    },
+    {
+      "alert_id": "SC21-WAZUH-006",
+      "source": "wazuh",
+      "rule_id": 100723,
+      "description": "Payment anomaly - vendor bank details mismatch",
+      "severity": "critical",
+      "phase": 3,
+      "mitre_technique": "T1565",
+      "expected_fields": {
+        "event_type": "payment_anomaly",
+        "risk_score": "95"
+      }
+    },
+    {
+      "alert_id": "SC21-WAZUH-007",
+      "source": "wazuh",
+      "rule_id": 100745,
+      "description": "Newly registered domain resembling known vendor",
+      "severity": "high",
+      "phase": 1,
+      "mitre_technique": "T1583.001",
+      "expected_fields": {
+        "event_type": "domain_registration",
+        "domain": "g1obalparts-supply.test"
+      }
+    },
+    {
+      "alert_id": "SC21-WAZUH-008",
+      "source": "wazuh",
+      "rule_id": 100735,
+      "description": "Payment approved referencing spoofed vendor",
+      "severity": "high",
+      "phase": 3,
+      "mitre_technique": "T1565",
+      "expected_fields": {
+        "event_type": "payment_approval",
+        "vendor": "g1obalparts-supply.test"
+      }
+    },
+    {
+      "alert_id": "SC21-SURICATA-001",
+      "source": "suricata",
+      "rule_id": 2002120,
+      "description": "SMTP from spoofed vendor domain",
+      "severity": "high",
+      "phase": 2,
+      "mitre_technique": "T1566.002",
+      "expected_fields": {
+        "from": "*@g1obalparts-supply.test"
+      }
+    },
+    {
+      "alert_id": "SC21-WAZUH-009",
+      "source": "wazuh",
+      "rule_id": 100730,
+      "description": "Reconnaissance targeting vendor relationship",
+      "severity": "medium",
+      "phase": 1,
+      "mitre_technique": "T1583.001",
+      "expected_fields": {
+        "event_type": "reconnaissance",
+        "vendor_identified": "globalparts-supply.test"
+      }
+    }
+  ]
+}

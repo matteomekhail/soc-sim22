@@ -1,0 +1,108 @@
+<!-- Scenario 16: Privilege Escalation Detection Rules for Wazuh -->
+<group name="wcace,privilege_escalation,">
+
+  <!-- Sudo: Unauthorized sudo attempt (user not in sudoers) -->
+  <rule id="100540" level="10">
+    <if_group>syslog</if_group>
+    <match>NOT in sudoers</match>
+    <description>WCACE S16: Unauthorized sudo attempt - user not in sudoers file</description>
+    <mitre>
+      <id>T1548</id>
+    </mitre>
+    <group>privilege_escalation,sudo,</group>
+  </rule>
+
+  <!-- Sudo: Multiple unauthorized sudo attempts from same user -->
+  <rule id="100541" level="12" frequency="3" timeframe="120">
+    <if_matched_sid>100540</if_matched_sid>
+    <same_source_ip />
+    <description>WCACE S16: Multiple unauthorized sudo attempts - possible privilege escalation attempt</description>
+    <mitre>
+      <id>T1548</id>
+    </mitre>
+    <group>privilege_escalation,sudo,</group>
+  </rule>
+
+  <!-- SUID: SUID binary search detected (find / -perm -4000) -->
+  <rule id="100542" level="13">
+    <if_group>syslog</if_group>
+    <match>find / -perm -4000|find / -perm -u=s|find / -perm /4000</match>
+    <description>WCACE S16: SUID binary enumeration detected - privilege escalation reconnaissance</description>
+    <mitre>
+      <id>T1068</id>
+    </mitre>
+    <group>privilege_escalation,suid,</group>
+  </rule>
+
+  <!-- SUID: Suspicious SUID binary execution with shell spawn -->
+  <rule id="100543" level="14">
+    <if_group>syslog</if_group>
+    <regex>EXECVE.*euid=0.*exe=.*(find|vim|nmap|python|env|awk|perl)</regex>
+    <description>WCACE S16: SUID binary exploited to gain root privileges</description>
+    <mitre>
+      <id>T1068</id>
+      <id>T1548</id>
+    </mitre>
+    <group>privilege_escalation,suid,</group>
+  </rule>
+
+  <!-- Root: Root session opened by non-admin user -->
+  <rule id="100544" level="14">
+    <if_group>authentication_success</if_group>
+    <match>session opened for user root by</match>
+    <regex>by \w+\.\w+</regex>
+    <description>WCACE S16: Root session opened by non-admin user - privilege escalation confirmed</description>
+    <mitre>
+      <id>T1068</id>
+    </mitre>
+    <group>privilege_escalation,root_access,</group>
+  </rule>
+
+  <!-- Shadow: Unauthorized access to /etc/shadow -->
+  <rule id="100545" level="12">
+    <if_group>syscheck</if_group>
+    <match>/etc/shadow</match>
+    <description>WCACE S16: /etc/shadow accessed - credential harvesting after privilege escalation</description>
+    <mitre>
+      <id>T1068</id>
+    </mitre>
+    <group>privilege_escalation,credential_access,</group>
+  </rule>
+
+  <!-- Account: New user account created with elevated privileges -->
+  <rule id="100546" level="14">
+    <if_group>syslog</if_group>
+    <match>new user:</match>
+    <regex>sudo|adm|wheel|root</regex>
+    <description>WCACE S16: New user account created with administrative group membership</description>
+    <mitre>
+      <id>T1136.001</id>
+    </mitre>
+    <group>privilege_escalation,persistence,</group>
+  </rule>
+
+  <!-- Sudoers: Sudoers file modified with NOPASSWD entry -->
+  <rule id="100547" level="15">
+    <if_group>syscheck</if_group>
+    <match>/etc/sudoers</match>
+    <regex>NOPASSWD</regex>
+    <description>WCACE S16: Sudoers file modified with NOPASSWD entry - backdoor privilege escalation</description>
+    <mitre>
+      <id>T1548</id>
+    </mitre>
+    <group>privilege_escalation,persistence,</group>
+  </rule>
+
+  <!-- Correlation: Full privilege escalation kill chain -->
+  <rule id="100548" level="15" frequency="3" timeframe="600">
+    <if_matched_group>privilege_escalation</if_matched_group>
+    <description>WCACE S16: Privilege escalation kill chain detected - sudo abuse to root to backdoor</description>
+    <mitre>
+      <id>T1068</id>
+      <id>T1548</id>
+      <id>T1136.001</id>
+    </mitre>
+    <group>privilege_escalation,kill_chain,</group>
+  </rule>
+
+</group>

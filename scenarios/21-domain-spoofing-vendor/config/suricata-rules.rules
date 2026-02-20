@@ -1,0 +1,41 @@
+# =============================================================================
+# Scenario 21: Domain Spoofing Vendor - Suricata Rules
+# =============================================================================
+# Detect access to spoofed vendor domains and payment fraud indicators.
+# Deploy to: /etc/suricata/rules/local-scenario21.rules
+# Then add to suricata.yaml under rule-files.
+# =============================================================================
+
+# --- DNS-based detection ---
+
+# Detect DNS query for the spoofed vendor domain (g1obalparts-supply.test)
+alert dns any any -> any 53 (msg:"SC21 - DNS query for spoofed vendor domain g1obalparts-supply.test"; dns.query; content:"g1obalparts-supply"; nocase; classtype:social-engineering; sid:2002101; rev:1; metadata:scenario 21, mitre_attack T1583.001;)
+
+# Detect DNS MX record lookup for spoofed vendor domain
+alert dns any any -> any 53 (msg:"SC21 - DNS MX query for spoofed vendor domain"; dns.query; content:"g1obalparts-supply.test"; nocase; classtype:social-engineering; sid:2002102; rev:1;)
+
+# --- HTTP/TLS-based detection ---
+
+# Detect HTTP traffic to spoofed vendor domain
+alert http any any -> any any (msg:"SC21 - HTTP request to spoofed vendor domain"; http.host; content:"g1obalparts-supply.test"; nocase; classtype:social-engineering; sid:2002110; rev:1; metadata:scenario 21, mitre_attack T1036;)
+
+# Detect TLS connection to spoofed vendor domain via SNI
+alert tls any any -> any 443 (msg:"SC21 - TLS SNI to spoofed vendor domain"; tls.sni; content:"g1obalparts-supply.test"; nocase; classtype:social-engineering; sid:2002111; rev:1;)
+
+# --- SMTP-based detection ---
+
+# Detect SMTP traffic from spoofed vendor domain
+alert smtp any any -> any 25 (msg:"SC21 - SMTP from spoofed vendor domain g1obalparts-supply.test"; smtp.mail_from; content:"g1obalparts-supply.test"; nocase; classtype:social-engineering; sid:2002120; rev:1; metadata:scenario 21, mitre_attack T1566.002;)
+
+# Detect SMTP with invoice keyword from spoofed domain
+alert smtp any any -> any 25 (msg:"SC21 - Invoice email from spoofed vendor domain"; smtp.mail_from; content:"g1obalparts-supply.test"; flow:to_server,established; content:"invoice"; nocase; classtype:social-engineering; sid:2002121; rev:1;)
+
+# --- Network traffic to attacker ---
+
+# Detect outbound connections to known attacker IP
+alert tcp $HOME_NET any -> 203.0.113.50 any (msg:"SC21 - Outbound connection to attacker IP (vendor spoof)"; flow:to_server,established; classtype:trojan-activity; sid:2002130; rev:1; metadata:scenario 21;)
+
+# --- PDF attachment analysis ---
+
+# Detect PDF download from spoofed vendor domain (potential fake invoice)
+alert http any any -> $HOME_NET any (msg:"SC21 - PDF download from spoofed vendor domain (possible fake invoice)"; http.host; content:"g1obalparts-supply.test"; http.uri; content:".pdf"; nocase; classtype:social-engineering; sid:2002140; rev:1;)

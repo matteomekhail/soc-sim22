@@ -1,0 +1,97 @@
+{
+  "scenario": "07-zero-day-lateral-movement",
+  "description": "Expected alerts from zero-day exploit and lateral movement simulation",
+  "expected_alerts": [
+    {
+      "source": "suricata",
+      "sid": 9070001,
+      "description": "Zero-Day - Internal scan from DMZ host",
+      "min_count": 1,
+      "severity": "medium"
+    },
+    {
+      "source": "suricata",
+      "sid": 9070002,
+      "description": "Lateral Movement - Sequential SSH access pattern",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "suricata",
+      "sid": 9070003,
+      "description": "Lateral Movement - SMB admin share access",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "suricata",
+      "sid": 9070004,
+      "description": "Domain Compromise - Mass LDAP query to DC",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "source": "suricata",
+      "sid": 9070005,
+      "description": "Domain Compromise - GPO modification from DMZ",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100440,
+      "description": "Anomalous process crash on application server",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100441,
+      "description": "Zero-day exploit indicator - unexpected shell spawn",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100443,
+      "description": "Credential harvesting on compromised host",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100444,
+      "description": "Lateral movement via SSH - sequential host access",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100445,
+      "description": "Lateral movement via SMB - admin share access",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100446,
+      "description": "Sequential host compromise pattern detected",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100448,
+      "description": "Mass credential extraction from domain controller",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100449,
+      "description": "Zero-day lateral movement campaign correlated",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}

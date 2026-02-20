@@ -1,0 +1,160 @@
+{
+  "scenario": "02-domain-spoofing-data-theft",
+  "description": "Expected alerts for the domain spoofing and data theft attack simulation",
+  "mitre_techniques": ["T1583.001", "T1071", "T1566.002", "T1078", "T1041"],
+  "alerts": [
+    {
+      "alert_id": "SC02-DNS-001",
+      "source": "suricata",
+      "rule_id": 2000201,
+      "description": "DNS query for spoofed domain acmec0rp.local",
+      "severity": "high",
+      "phase": 1,
+      "mitre_technique": "T1583.001",
+      "expected_fields": {
+        "query": "acmec0rp.local"
+      }
+    },
+    {
+      "alert_id": "SC02-DNS-002",
+      "source": "suricata",
+      "rule_id": 2000202,
+      "description": "DNS query for phishing domain acmecorp-login.test",
+      "severity": "high",
+      "phase": 3,
+      "mitre_technique": "T1566.002",
+      "expected_fields": {
+        "query": "acmecorp-login.test"
+      }
+    },
+    {
+      "alert_id": "SC02-WAZUH-001",
+      "source": "wazuh",
+      "rule_id": 100200,
+      "description": "DNS query to spoofed lookalike domain",
+      "severity": "high",
+      "phase": 1,
+      "mitre_technique": "T1583.001",
+      "expected_fields": {
+        "query": "acmec0rp.local"
+      }
+    },
+    {
+      "alert_id": "SC02-WAZUH-002",
+      "source": "wazuh",
+      "rule_id": 100210,
+      "description": "Phishing email from spoofed domain with SPF failure",
+      "severity": "high",
+      "phase": 3,
+      "mitre_technique": "T1566.002",
+      "expected_fields": {
+        "from": "*@acmec0rp.local",
+        "spf_result": "fail"
+      }
+    },
+    {
+      "alert_id": "SC02-WAZUH-003",
+      "source": "wazuh",
+      "rule_id": 100221,
+      "description": "Credentials captured by phishing site",
+      "severity": "critical",
+      "phase": 4,
+      "mitre_technique": "T1078",
+      "expected_fields": {
+        "event_type": "credential_harvest",
+        "event": "credentials_captured",
+        "phishing_domain": "acmecorp-login.test"
+      }
+    },
+    {
+      "alert_id": "SC02-WAZUH-004",
+      "source": "wazuh",
+      "rule_id": 100225,
+      "description": "Successful login from external attacker IP",
+      "severity": "critical",
+      "phase": 5,
+      "mitre_technique": "T1078",
+      "expected_fields": {
+        "src_ip": "203.0.113.50",
+        "result": "success"
+      }
+    },
+    {
+      "alert_id": "SC02-WAZUH-005",
+      "source": "wazuh",
+      "rule_id": 100230,
+      "description": "Anomalous large outbound data transfer",
+      "severity": "critical",
+      "phase": 5,
+      "mitre_technique": "T1041",
+      "expected_fields": {
+        "event_type": "data_transfer_anomaly",
+        "dst_ip": "203.0.113.50"
+      }
+    },
+    {
+      "alert_id": "SC02-SURICATA-001",
+      "source": "suricata",
+      "rule_id": 2000210,
+      "description": "HTTP request to phishing domain",
+      "severity": "high",
+      "phase": 4,
+      "mitre_technique": "T1071",
+      "expected_fields": {
+        "event_type": "web_access",
+        "path": "acmecorp-login.test"
+      }
+    },
+    {
+      "alert_id": "SC02-SURICATA-002",
+      "source": "suricata",
+      "rule_id": 2000211,
+      "description": "Credential submission to phishing site (POST)",
+      "severity": "critical",
+      "phase": 4,
+      "mitre_technique": "T1078",
+      "expected_fields": {
+        "method": "POST",
+        "path": "acmecorp-login.test/login"
+      }
+    },
+    {
+      "alert_id": "SC02-SURICATA-003",
+      "source": "suricata",
+      "rule_id": 2000220,
+      "description": "Outbound connection to attacker credential harvester",
+      "severity": "critical",
+      "phase": 4,
+      "mitre_technique": "T1041",
+      "expected_fields": {
+        "dst_ip": "203.0.113.50",
+        "dst_port": 8443
+      }
+    },
+    {
+      "alert_id": "SC02-WAZUH-006",
+      "source": "wazuh",
+      "rule_id": 100232,
+      "description": "Sensitive file downloaded - potential data theft",
+      "severity": "high",
+      "phase": 5,
+      "mitre_technique": "T1041",
+      "expected_fields": {
+        "event_type": "data_access",
+        "action": "download"
+      }
+    },
+    {
+      "alert_id": "SC02-SURICATA-004",
+      "source": "suricata",
+      "rule_id": 2000230,
+      "description": "HTTrack site cloning tool detected",
+      "severity": "medium",
+      "phase": 2,
+      "mitre_technique": "T1583.001",
+      "expected_fields": {
+        "user_agent": "HTTrack"
+      }
+    }
+  ]
+}

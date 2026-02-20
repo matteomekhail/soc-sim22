@@ -1,0 +1,107 @@
+<!-- Scenario 07: Zero-Day Exploit & Lateral Movement Detection Rules for Wazuh -->
+<group name="wcace,zero_day,lateral_movement,">
+
+  <rule id="100440" level="10">
+    <if_group>syslog|kern</if_group>
+    <match>segfault|SIGSEGV|core_dumped|application_crash</match>
+    <description>WCACE S07: Anomalous process crash on application server - possible exploit</description>
+    <mitre>
+      <id>T1068</id>
+    </mitre>
+    <group>zero_day,exploit,</group>
+  </rule>
+
+  <rule id="100441" level="14">
+    <if_group>process_execution</if_group>
+    <match>bash -i|/bin/sh -i|reverse shell</match>
+    <regex>parent_process.*api-server|parent_process.*httpd|parent_process.*nginx</regex>
+    <description>WCACE S07: Zero-day exploit indicator - unexpected shell spawn from service</description>
+    <mitre>
+      <id>T1068</id>
+      <id>T1059</id>
+    </mitre>
+    <group>zero_day,exploit,shell_spawn,</group>
+  </rule>
+
+  <rule id="100442" level="10" frequency="10" timeframe="120">
+    <if_matched_group>firewall</if_matched_group>
+    <same_source_ip />
+    <description>WCACE S07: Internal network reconnaissance from compromised host</description>
+    <mitre>
+      <id>T1018</id>
+    </mitre>
+    <group>recon,lateral_movement,</group>
+  </rule>
+
+  <rule id="100443" level="12">
+    <if_group>file_access|process_execution</if_group>
+    <match>/etc/shadow|ssh_key|credential_harvest|id_rsa</match>
+    <description>WCACE S07: Credential harvesting on compromised host</description>
+    <mitre>
+      <id>T1003</id>
+    </mitre>
+    <group>credential_access,lateral_movement,</group>
+  </rule>
+
+  <rule id="100444" level="12" frequency="3" timeframe="600">
+    <if_matched_group>authentication_success</if_matched_group>
+    <same_source_ip />
+    <description>WCACE S07: Lateral movement via SSH - sequential host access from single source</description>
+    <mitre>
+      <id>T1021</id>
+    </mitre>
+    <group>lateral_movement,ssh,</group>
+  </rule>
+
+  <rule id="100445" level="12">
+    <if_group>smb_access|smb_session</if_group>
+    <match>C$|ADMIN$|admin share</match>
+    <description>WCACE S07: Lateral movement via SMB - administrative share access</description>
+    <mitre>
+      <id>T1021</id>
+    </mitre>
+    <group>lateral_movement,smb,</group>
+  </rule>
+
+  <rule id="100446" level="14">
+    <if_group>lateral_movement</if_group>
+    <match>lateral_movement_chain|sequential|compromise chain</match>
+    <description>WCACE S07: Sequential host compromise pattern detected</description>
+    <mitre>
+      <id>T1021</id>
+      <id>T1068</id>
+    </mitre>
+    <group>lateral_movement,chain,critical,</group>
+  </rule>
+
+  <rule id="100447" level="14">
+    <if_group>authentication_success|process_execution</if_group>
+    <match>domain controller|dc.acmecorp|10.0.0.10</match>
+    <description>WCACE S07: Domain controller accessed from non-admin source</description>
+    <mitre>
+      <id>T1021</id>
+    </mitre>
+    <group>lateral_movement,domain_compromise,</group>
+  </rule>
+
+  <rule id="100448" level="15">
+    <if_group>credential_access|process_execution</if_group>
+    <match>credential_dump|SAM database|accounts_dumped|DCSync</match>
+    <description>WCACE S07: Mass credential extraction from domain controller</description>
+    <mitre>
+      <id>T1003</id>
+    </mitre>
+    <group>credential_access,domain_compromise,critical,</group>
+  </rule>
+
+  <rule id="100449" level="15" frequency="4" timeframe="3600">
+    <if_matched_group>lateral_movement</if_matched_group>
+    <description>WCACE S07: Zero-day lateral movement campaign correlated - Multiple indicators</description>
+    <mitre>
+      <id>T1068</id>
+      <id>T1021</id>
+    </mitre>
+    <group>zero_day,lateral_movement,correlation,critical,</group>
+  </rule>
+
+</group>

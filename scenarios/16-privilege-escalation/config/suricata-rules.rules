@@ -1,0 +1,20 @@
+# Scenario 16: Privilege Escalation Detection Rules for Suricata
+# These rules supplement the global rules in soc-stack/suricata/rules/local.rules
+
+# --- SUID Exploitation Indicators ---
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"S16: Outbound connection from host with recent privilege escalation"; flow:to_server,established; detection_filter:track by_src, count 3, seconds 60; sid:9160001; rev:1; classtype:trojan-activity;)
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 22 (msg:"S16: SSH connection from server following privilege escalation activity"; flow:to_server,established; sid:9160002; rev:1; classtype:policy-violation;)
+
+# --- Backdoor Account Network Activity ---
+
+alert tcp $EXTERNAL_NET any -> $HOME_NET 22 (msg:"S16: Inbound SSH to server from known attacker IP range"; flow:to_server,established; content:"SSH-"; sid:9160003; rev:1; classtype:attempted-admin;)
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"S16: Suspicious outbound connection after new admin account creation"; flow:to_server,established; detection_filter:track by_src, count 5, seconds 120; sid:9160004; rev:1; classtype:trojan-activity;)
+
+# --- Reverse Shell Indicators ---
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 4444:4450 (msg:"S16: Outbound connection to common reverse shell port"; flow:to_server,established; sid:9160005; rev:1; classtype:trojan-activity;)
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"S16: Potential reverse shell - /bin/sh or /bin/bash in TCP stream"; flow:established; content:"/bin/sh"; sid:9160006; rev:1; classtype:trojan-activity;)
