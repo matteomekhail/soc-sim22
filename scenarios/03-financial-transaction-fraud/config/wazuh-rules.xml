@@ -1,0 +1,35 @@
+<!-- Scenario 3: Financial Transaction Fraud Detection Rules -->
+<group name="wcace,financial,fraud,">
+
+  <rule id="100020" level="10">
+    <if_group>financial</if_group>
+    <match>transaction_modified|amount_changed|recipient_changed</match>
+    <description>WCACE S03: Transaction details modified after creation</description>
+    <mitre>
+      <id>T1565</id>
+    </mitre>
+    <group>fraud,financial,</group>
+  </rule>
+
+  <rule id="100021" level="12">
+    <if_group>financial</if_group>
+    <regex>amount.*[1-9]\d{5,}</regex>
+    <match>new_beneficiary</match>
+    <description>WCACE S03: Large transfer to new beneficiary account</description>
+    <mitre>
+      <id>T1657</id>
+    </mitre>
+    <group>fraud,financial,critical,</group>
+  </rule>
+
+  <rule id="100022" level="8">
+    <if_group>audit</if_group>
+    <match>log_deleted|log_modified|sequence_gap</match>
+    <description>WCACE S03: Audit log tampering detected</description>
+    <mitre>
+      <id>T1070</id>
+    </mitre>
+    <group>fraud,tampering,</group>
+  </rule>
+
+</group>

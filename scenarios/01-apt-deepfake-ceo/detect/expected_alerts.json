@@ -1,0 +1,22 @@
+{
+  "scenario": "01-apt-deepfake-ceo",
+  "tier": 3,
+  "description": "Expected alerts for deepfake CEO fraud (demo only)",
+  "note": "This scenario cannot be fully simulated without GPU resources. Sample logs provided for analysis.",
+  "expected_alerts": [
+    {
+      "source": "wazuh",
+      "rule_id": 100000,
+      "description": "Suspicious executive wire transfer request",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100002,
+      "description": "Large financial transfer triggered",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}

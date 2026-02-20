@@ -1,0 +1,34 @@
+<!-- Scenario 6: Dark Web Monitoring Alert Rules -->
+<group name="wcace,darkweb,monitoring,">
+
+  <rule id="100040" level="10">
+    <match>credential_dump</match>
+    <regex>acmecorp\.local|acmecorp\.com</regex>
+    <description>WCACE S06: Company credentials found in dark web dump</description>
+    <mitre>
+      <id>T1597</id>
+    </mitre>
+    <group>darkweb,credential-leak,</group>
+  </rule>
+
+  <rule id="100041" level="12">
+    <match>data_listing</match>
+    <regex>customer.*data|employee.*records|financial</regex>
+    <description>WCACE S06: Company data listed for sale on dark web</description>
+    <mitre>
+      <id>T1597</id>
+    </mitre>
+    <group>darkweb,data-breach,critical,</group>
+  </rule>
+
+  <rule id="100042" level="14">
+    <match>attack_planning</match>
+    <regex>acmecorp|target.*acme</regex>
+    <description>WCACE S06: Attack against company discussed on dark web forum</description>
+    <mitre>
+      <id>T1593</id>
+    </mitre>
+    <group>darkweb,threat-intel,critical,</group>
+  </rule>
+
+</group>

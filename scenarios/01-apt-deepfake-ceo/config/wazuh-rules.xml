@@ -1,0 +1,36 @@
+<!-- Scenario 1: Deepfake CEO Fraud Detection Rules -->
+<group name="wcace,deepfake,ceo-fraud,">
+
+  <rule id="100000" level="10">
+    <if_group>email</if_group>
+    <match>wire transfer|urgent|confidential</match>
+    <regex>ceo|chief executive|managing director</regex>
+    <description>WCACE S01: Suspicious executive wire transfer request</description>
+    <mitre>
+      <id>T1566</id>
+    </mitre>
+    <group>fraud,social-engineering,</group>
+  </rule>
+
+  <rule id="100001" level="8">
+    <if_group>email</if_group>
+    <match>SPF.*fail|DKIM.*fail</match>
+    <description>WCACE S01: Email authentication failure on executive communication</description>
+    <mitre>
+      <id>T1566</id>
+    </mitre>
+    <group>fraud,phishing,</group>
+  </rule>
+
+  <rule id="100002" level="12">
+    <if_group>financial</if_group>
+    <match>wire_transfer|bank_transfer</match>
+    <regex>amount.*[5-9]\d{4,}|amount.*[1-9]\d{5,}</regex>
+    <description>WCACE S01: Large financial transfer triggered by executive request</description>
+    <mitre>
+      <id>T1657</id>
+    </mitre>
+    <group>fraud,financial,critical,</group>
+  </rule>
+
+</group>

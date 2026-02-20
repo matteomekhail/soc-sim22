@@ -1,0 +1,2 @@
+# Scenario 3: Financial Transaction Fraud - Network rules
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"S03: Access to financial system from unusual IP"; flow:to_server,established; content:"/api/transactions"; http_uri; threshold:type limit, track by_src, count 1, seconds 3600; sid:9100300; rev:1; classtype:policy-violation;)

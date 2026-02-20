@@ -1,0 +1,21 @@
+{
+  "scenario": "03-financial-transaction-fraud",
+  "tier": 3,
+  "description": "Expected alerts for financial fraud (demo only)",
+  "expected_alerts": [
+    {
+      "source": "wazuh",
+      "rule_id": 100020,
+      "description": "Transaction details modified",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100021,
+      "description": "Large transfer to new beneficiary",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}

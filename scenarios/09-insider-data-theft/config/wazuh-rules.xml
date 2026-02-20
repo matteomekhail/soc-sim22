@@ -1,0 +1,53 @@
+<!-- Scenario 9: Insider Data Theft Detection Rules -->
+<group name="wcace,insider,data-theft,">
+
+  <rule id="100900" level="8">
+    <match>db_query</match>
+    <regex>SELECT \*|ssn|card_number|password_hash</regex>
+    <description>WCACE S09: Sensitive database query detected</description>
+    <mitre>
+      <id>T1530</id>
+    </mitre>
+    <group>insider,data-access,</group>
+  </rule>
+
+  <rule id="100901" level="10" frequency="5" timeframe="300">
+    <if_matched_group>data-access</if_matched_group>
+    <description>WCACE S09: Bulk database extraction - multiple sensitive queries</description>
+    <mitre>
+      <id>T1530</id>
+    </mitre>
+    <group>insider,data-theft,</group>
+  </rule>
+
+  <rule id="100902" level="10">
+    <match>file_create</match>
+    <regex>\.enc$|encrypted.*true</regex>
+    <description>WCACE S09: Encrypted file created in staging area</description>
+    <mitre>
+      <id>T1027</id>
+    </mitre>
+    <group>insider,staging,</group>
+  </rule>
+
+  <rule id="100903" level="12">
+    <match>https_transfer</match>
+    <regex>chunk_\d+|application/octet-stream</regex>
+    <description>WCACE S09: Chunked data exfiltration to external host</description>
+    <mitre>
+      <id>T1041</id>
+    </mitre>
+    <group>insider,exfiltration,</group>
+  </rule>
+
+  <rule id="100904" level="14" frequency="10" timeframe="600">
+    <if_matched_group>exfiltration</if_matched_group>
+    <description>WCACE S09: Active data exfiltration campaign detected</description>
+    <mitre>
+      <id>T1041</id>
+      <id>T1530</id>
+    </mitre>
+    <group>insider,data-theft,critical,</group>
+  </rule>
+
+</group>

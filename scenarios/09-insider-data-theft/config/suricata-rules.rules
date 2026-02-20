@@ -1,0 +1,5 @@
+# Scenario 9: Insider Data Theft Detection Rules
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 443 (msg:"S09: Large encrypted upload to external host"; flow:to_server,established; dsize:>500000; threshold:type both, track by_src, count 10, seconds 300; sid:9100900; rev:1; classtype:policy-violation;)
+alert tcp $HOME_NET any -> $EXTERNAL_NET 443 (msg:"S09: Chunked data exfiltration pattern"; flow:to_server,established; content:"PUT"; http_method; content:"/api/"; http_uri; content:"chunk"; http_uri; threshold:type both, track by_src, count 5, seconds 120; sid:9100901; rev:1; classtype:policy-violation;)
+alert dns any any -> any any (msg:"S09: DNS exfiltration backup channel"; dns.query; content:"exfil.test"; nocase; sid:9100902; rev:1; classtype:bad-unknown;)

@@ -1,0 +1,21 @@
+{
+  "scenario": "06-dark-web-monitoring",
+  "tier": 3,
+  "description": "Expected alerts from dark web monitoring (demo only)",
+  "expected_alerts": [
+    {
+      "source": "wazuh",
+      "rule_id": 100040,
+      "description": "Company credentials in dark web dump",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100041,
+      "description": "Company data listed for sale",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}

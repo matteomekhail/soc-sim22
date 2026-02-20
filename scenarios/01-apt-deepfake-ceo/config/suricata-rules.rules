@@ -1,0 +1,4 @@
+# Scenario 1: Deepfake CEO Fraud - Limited network detection
+# Most detection for this scenario is email/behavioral, not network-based
+
+alert http any any -> $EXTERNAL_NET any (msg:"S01: Suspicious video call to unknown endpoint"; flow:to_server,established; content:"video"; http_uri; content:"join"; http_uri; threshold:type limit, track by_src, count 1, seconds 3600; sid:9100100; rev:1; classtype:policy-violation;)

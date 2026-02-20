@@ -1,0 +1,3 @@
+# Scenario 6: Dark Web Monitoring - Tor connection detection
+alert tcp $HOME_NET any -> any 9001 (msg:"S06: Potential Tor relay connection"; flow:to_server,established; sid:9100600; rev:1; classtype:policy-violation;)
+alert tcp $HOME_NET any -> any 9030 (msg:"S06: Potential Tor directory connection"; flow:to_server,established; sid:9100601; rev:1; classtype:policy-violation;)

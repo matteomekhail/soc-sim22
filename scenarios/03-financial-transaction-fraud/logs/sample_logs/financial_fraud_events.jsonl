@@ -1,0 +1,8 @@
+{"timestamp":"2024-11-20T08:30:00Z","event_type":"auth_success","user":"finance.admin","src_ip":"10.0.0.105","system":"transaction_mgmt","method":"password+mfa"}
+{"timestamp":"2024-11-20T22:15:00Z","event_type":"auth_success","user":"finance.admin","src_ip":"203.0.113.55","system":"transaction_mgmt","method":"password","note":"After-hours login from external IP"}
+{"timestamp":"2024-11-20T22:18:00Z","event_type":"transaction_view","user":"finance.admin","transaction_id":"TXN-2024-8834","amount":45000.00,"recipient":"Vendor Corp LLC","status":"pending"}
+{"timestamp":"2024-11-20T22:20:00Z","event_type":"transaction_modified","user":"finance.admin","transaction_id":"TXN-2024-8834","field_changed":"recipient_account","old_value":"US-XXXX-1234","new_value":"CH93-0076-2011-6238-5295-7","amount":45000.00}
+{"timestamp":"2024-11-20T22:21:00Z","event_type":"transaction_modified","user":"finance.admin","transaction_id":"TXN-2024-8835","field_changed":"amount","old_value":12500.00,"new_value":125000.00}
+{"timestamp":"2024-11-20T22:22:00Z","event_type":"transaction_approved","user":"finance.admin","transaction_id":"TXN-2024-8834","amount":45000.00,"auto_approved":true,"note":"Below dual-auth threshold"}
+{"timestamp":"2024-11-20T22:25:00Z","event_type":"audit_log_modified","user":"finance.admin","action":"deleted 3 log entries","sequence_gap":"entries 44521-44523 missing"}
+{"timestamp":"2024-11-21T09:00:00Z","event_type":"reconciliation_alert","discrepancy":"TXN-8834 recipient mismatch","flagged_by":"automated_reconciliation"}

@@ -1,0 +1,48 @@
+{
+  "scenario": "09-insider-data-theft",
+  "description": "Expected alerts from insider data theft simulation",
+  "expected_alerts": [
+    {
+      "source": "wazuh",
+      "rule_id": 100900,
+      "description": "Sensitive database query detected",
+      "min_count": 4,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100901,
+      "description": "Bulk database extraction",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100902,
+      "description": "Encrypted file in staging area",
+      "min_count": 3,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100903,
+      "description": "Chunked data exfiltration",
+      "min_count": 10,
+      "severity": "critical"
+    },
+    {
+      "source": "suricata",
+      "sid": 9100900,
+      "description": "Large encrypted upload to external host",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "suricata",
+      "sid": 9100902,
+      "description": "DNS exfiltration backup channel",
+      "min_count": 10,
+      "severity": "high"
+    }
+  ]
+}
