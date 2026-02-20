@@ -1,0 +1,83 @@
+<!-- Scenario 08: Phishing & Ransomware Detection Rules for Wazuh -->
+<group name="wcace,ransomware,phishing,">
+
+  <!-- FIM: Mass file modification (ransomware indicator) -->
+  <rule id="100300" level="14" frequency="10" timeframe="30">
+    <if_group>syscheck</if_group>
+    <description>WCACE S08: Mass file modification detected - possible ransomware activity</description>
+    <mitre>
+      <id>T1486</id>
+    </mitre>
+    <group>ransomware,fim,</group>
+  </rule>
+
+  <!-- FIM: Ransomware file extension detected -->
+  <rule id="100301" level="14">
+    <if_group>syscheck</if_group>
+    <match>.encrypted|.locked|.crypted|.enc|.crypt</match>
+    <description>WCACE S08: Ransomware file extension detected - files being encrypted</description>
+    <mitre>
+      <id>T1486</id>
+    </mitre>
+    <group>ransomware,fim,</group>
+  </rule>
+
+  <!-- FIM: Ransom note file creation -->
+  <rule id="100302" level="15">
+    <if_group>syscheck</if_group>
+    <match>RANSOM_NOTE|DECRYPT_FILES|HOW_TO_RECOVER|README_LOCKED</match>
+    <description>WCACE S08: Ransom note file detected - ransomware confirmed</description>
+    <mitre>
+      <id>T1486</id>
+    </mitre>
+    <group>ransomware,fim,</group>
+  </rule>
+
+  <!-- Process: Suspicious child process of email client -->
+  <rule id="100303" level="12">
+    <if_group>process_monitor</if_group>
+    <match>outlook.exe|thunderbird</match>
+    <regex>cmd\.exe|powershell|wscript|cscript|mshta</regex>
+    <description>WCACE S08: Suspicious process spawned by email client - possible phishing payload</description>
+    <mitre>
+      <id>T1204.002</id>
+      <id>T1566.001</id>
+    </mitre>
+    <group>phishing,execution,</group>
+  </rule>
+
+  <!-- Network: C2 communication from potentially compromised host -->
+  <rule id="100304" level="13">
+    <if_group>firewall</if_group>
+    <match>203.0.113.100</match>
+    <description>WCACE S08: Communication with known ransomware C2 server detected</description>
+    <mitre>
+      <id>T1071</id>
+    </mitre>
+    <group>ransomware,c2,</group>
+  </rule>
+
+  <!-- Email: Phishing with suspicious attachment -->
+  <rule id="100305" level="10">
+    <if_group>mail</if_group>
+    <match>spf_result|SPF</match>
+    <regex>\.exe|\.docm|\.xlsm|\.pptm|\.zip|\.js|\.vbs</regex>
+    <description>WCACE S08: Phishing email with suspicious attachment detected</description>
+    <mitre>
+      <id>T1566.001</id>
+    </mitre>
+    <group>phishing,email,</group>
+  </rule>
+
+  <!-- Correlation: Full ransomware kill chain -->
+  <rule id="100306" level="15" frequency="3" timeframe="300">
+    <if_matched_group>ransomware</if_matched_group>
+    <description>WCACE S08: Ransomware kill chain detected - phishing to file encryption</description>
+    <mitre>
+      <id>T1566.001</id>
+      <id>T1486</id>
+    </mitre>
+    <group>ransomware,kill_chain,</group>
+  </rule>
+
+</group>

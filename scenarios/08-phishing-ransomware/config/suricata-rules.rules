@@ -1,0 +1,20 @@
+# Scenario 08: Phishing & Ransomware Detection Rules for Suricata
+# These rules supplement the global rules in soc-stack/suricata/rules/local.rules
+
+# --- Phishing / Malicious Download ---
+
+alert http $EXTERNAL_NET any -> $HOME_NET any (msg:"S08: Suspicious executable download via email link"; flow:to_client,established; content:"Content-Disposition"; http_header; content:".exe"; http_header; sid:9800001; rev:1; classtype:trojan-activity;)
+
+alert http $EXTERNAL_NET any -> $HOME_NET any (msg:"S08: Macro-enabled Office document download"; flow:to_client,established; content:"Content-Type"; http_header; pcre:"/\.(docm|xlsm|pptm)/i"; sid:9800002; rev:1; classtype:trojan-activity;)
+
+# --- Ransomware C2 Communication ---
+
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"S08: Ransomware C2 beacon - TLS to known bad IP"; flow:to_server,established; content:"updates.evil-cdn.test"; tls.sni; sid:9800003; rev:1; classtype:trojan-activity;)
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 443 (msg:"S08: Ransomware C2 periodic beacon detected"; flow:to_server,established; detection_filter:track by_src, count 5, seconds 300; sid:9800004; rev:1; classtype:trojan-activity;)
+
+# --- Ransomware Payload Indicators ---
+
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"S08: Ransomware key exchange - POST with encrypted payload"; flow:to_server,established; content:"POST"; http_method; content:"Content-Type|3a 20|application/octet-stream"; http_header; dsize:>64; sid:9800005; rev:1; classtype:trojan-activity;)
+
+alert dns $HOME_NET any -> any any (msg:"S08: DNS query to known ransomware C2 domain"; dns.query; content:"evil-cdn.test"; nocase; sid:9800006; rev:1; classtype:trojan-activity;)

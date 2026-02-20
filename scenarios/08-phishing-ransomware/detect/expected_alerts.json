@@ -1,0 +1,86 @@
+{
+  "scenario": "08-phishing-ransomware",
+  "description": "Expected alerts from phishing email delivery and ransomware encryption simulation",
+  "expected_alerts": [
+    {
+      "phase": "phishing",
+      "source": "suricata",
+      "sid": 9800001,
+      "description": "Suspicious executable download via email link",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "phishing",
+      "source": "suricata",
+      "sid": 9800002,
+      "description": "Macro-enabled Office document download",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "ransomware",
+      "source": "suricata",
+      "sid": 9800003,
+      "description": "Ransomware C2 beacon - TLS to known bad IP",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "ransomware",
+      "source": "suricata",
+      "sid": 9800004,
+      "description": "Ransomware C2 periodic beacon detected",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "phishing",
+      "source": "wazuh",
+      "rule_id": 100305,
+      "description": "Phishing email with suspicious attachment detected",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "ransomware",
+      "source": "wazuh",
+      "rule_id": 100300,
+      "description": "Mass file modification detected - possible ransomware",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "ransomware",
+      "source": "wazuh",
+      "rule_id": 100301,
+      "description": "Ransomware file extension detected (.encrypted)",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "ransomware",
+      "source": "wazuh",
+      "rule_id": 100302,
+      "description": "Ransom note file created (RANSOM_NOTE.txt)",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "ransomware",
+      "source": "wazuh",
+      "rule_id": 100304,
+      "description": "Communication with known ransomware C2 server",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "ransomware",
+      "source": "wazuh",
+      "rule_id": 100306,
+      "description": "Ransomware kill chain - phishing to file encryption",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}

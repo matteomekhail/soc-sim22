@@ -1,0 +1,17 @@
+# Scenario 14: Credential Stuffing Detection Rules for Suricata
+# These rules supplement the global rules in soc-stack/suricata/rules/local.rules
+
+# Detect high-frequency POST requests to /login endpoint (threshold-based)
+alert http any any -> $HOME_NET any (msg:"S14: Credential Stuffing - Login flood detected"; flow:to_server,established; content:"POST"; http_method; content:"/login"; http_uri; threshold:type both, track by_src, count 10, seconds 60; sid:9200001; rev:1; classtype:attempted-admin; metadata:mitre_technique T1110.004;)
+
+# Detect multiple 401 responses (failed logins) from same source
+alert http $HOME_NET any -> any any (msg:"S14: Credential Stuffing - Multiple auth failures"; flow:to_client,established; content:"401"; http_stat_code; threshold:type both, track by_dst, count 10, seconds 60; sid:9200002; rev:1; classtype:unsuccessful-user; metadata:mitre_technique T1110.004;)
+
+# Detect automated tool user-agent strings in login requests
+alert http any any -> $HOME_NET any (msg:"S14: Credential Stuffing - Automated tool detected"; flow:to_server,established; content:"POST"; http_method; content:"/login"; http_uri; content:"python-requests"; http_user_agent; nocase; sid:9200003; rev:1; classtype:attempted-admin; metadata:mitre_technique T1110.004;)
+
+# Detect distributed credential stuffing (multiple source IPs, same target)
+alert http any any -> $HOME_NET any (msg:"S14: Distributed Credential Stuffing - Login attempts from multiple sources"; flow:to_server,established; content:"POST"; http_method; content:"/login"; http_uri; threshold:type both, track by_dst, count 50, seconds 120; sid:9200004; rev:1; classtype:attempted-admin; metadata:mitre_technique T1110.004;)
+
+# Detect successful login after multiple failures (account compromise indicator)
+alert http $HOME_NET any -> any any (msg:"S14: Credential Stuffing - Successful login after failures"; flow:to_client,established; content:"200"; http_stat_code; content:"success"; http_server_body; nocase; sid:9200005; rev:1; classtype:successful-admin; metadata:mitre_technique T1078;)

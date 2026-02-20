@@ -1,0 +1,55 @@
+{
+  "scenario": "17-dns-tunnelling",
+  "description": "Expected alerts from DNS tunnelling attack simulation",
+  "expected_alerts": [
+    {
+      "source": "suricata",
+      "sid": 9170001,
+      "description": "DNS Tunnel - Unusually Long DNS Query",
+      "min_count": 5,
+      "severity": "high"
+    },
+    {
+      "source": "suricata",
+      "sid": 9170002,
+      "description": "DNS Tunnel - TXT Query Flood to Single Domain",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "suricata",
+      "sid": 9170003,
+      "description": "DNS Tunnel - High Entropy Subdomain",
+      "min_count": 5,
+      "severity": "medium"
+    },
+    {
+      "source": "suricata",
+      "sid": 9170006,
+      "description": "DNS Tunnel - Query to Known Exfiltration Domain",
+      "min_count": 10,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100500,
+      "description": "DNS query with unusually long domain name",
+      "min_count": 5,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100501,
+      "description": "DNS query to known exfiltration domain",
+      "min_count": 10,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100503,
+      "description": "High volume DNS tunnel activity - Active exfiltration",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}

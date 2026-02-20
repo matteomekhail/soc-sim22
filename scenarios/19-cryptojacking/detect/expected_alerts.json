@@ -1,0 +1,69 @@
+{
+  "scenario": "19-cryptojacking",
+  "description": "Expected alerts from cryptojacking attack simulation",
+  "expected_alerts": [
+    {
+      "source": "suricata",
+      "sid": 9190001,
+      "description": "Cryptocurrency Mining Pool HTTP Connection",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "suricata",
+      "sid": 9190002,
+      "description": "CoinHive Crypto Miner JS Detected",
+      "min_count": 3,
+      "severity": "critical"
+    },
+    {
+      "source": "suricata",
+      "sid": 9190003,
+      "description": "Stratum Mining Protocol - Login",
+      "min_count": 3,
+      "severity": "critical"
+    },
+    {
+      "source": "suricata",
+      "sid": 9190004,
+      "description": "Stratum Mining Protocol - Hash Submission",
+      "min_count": 5,
+      "severity": "critical"
+    },
+    {
+      "source": "suricata",
+      "sid": 9190005,
+      "description": "Connection to Known Mining Pool IP",
+      "min_count": 3,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100600,
+      "description": "Cryptocurrency miner script detected",
+      "min_count": 3,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100602,
+      "description": "Stratum mining protocol communication",
+      "min_count": 3,
+      "severity": "critical"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100604,
+      "description": "Sustained mining beacon pattern",
+      "min_count": 3,
+      "severity": "critical"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100605,
+      "description": "Active mining campaign - correlation rule",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+<!-- Scenario 17: DNS Tunnelling Detection Rules for Wazuh -->
+<group name="wcace,dns-tunnel,exfiltration,">
+
+  <rule id="100500" level="10">
+    <if_group>syslog|dns</if_group>
+    <regex>query_length":\s*\d{3,}</regex>
+    <description>WCACE S17: DNS query with unusually long domain name detected</description>
+    <mitre>
+      <id>T1071.004</id>
+      <id>T1048</id>
+    </mitre>
+    <group>attack,dns-tunnel,</group>
+  </rule>
+
+  <rule id="100501" level="10">
+    <if_group>syslog|dns</if_group>
+    <match>exfil.test</match>
+    <description>WCACE S17: DNS query to known exfiltration domain (exfil.test)</description>
+    <mitre>
+      <id>T1071.004</id>
+      <id>T1048</id>
+    </mitre>
+    <group>attack,dns-tunnel,</group>
+  </rule>
+
+  <rule id="100502" level="12">
+    <if_group>syslog|dns</if_group>
+    <regex>query_type":\s*"TXT"</regex>
+    <match>exfil.test</match>
+    <description>WCACE S17: DNS TXT query to exfiltration domain - likely data tunnel</description>
+    <mitre>
+      <id>T1071.004</id>
+      <id>T1048</id>
+    </mitre>
+    <group>attack,dns-tunnel,</group>
+  </rule>
+
+  <rule id="100503" level="14" frequency="20" timeframe="60">
+    <if_matched_group>dns-tunnel</if_matched_group>
+    <description>WCACE S17: High volume DNS tunnel activity - Active data exfiltration</description>
+    <mitre>
+      <id>T1071.004</id>
+      <id>T1048</id>
+    </mitre>
+    <group>attack,dns-tunnel,exfiltration,</group>
+  </rule>
+
+  <rule id="100504" level="12">
+    <if_group>syslog|dns</if_group>
+    <regex>query_type":\s*"CNAME"</regex>
+    <match>exfil.test</match>
+    <description>WCACE S17: DNS CNAME query to exfiltration domain - alternate tunnel channel</description>
+    <mitre>
+      <id>T1071.004</id>
+      <id>T1048</id>
+    </mitre>
+    <group>attack,dns-tunnel,</group>
+  </rule>
+
+</group>

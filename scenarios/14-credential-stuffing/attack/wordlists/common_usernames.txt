@@ -1,0 +1,21 @@
+# Common Usernames for Credential Stuffing (educational/testing purposes only)
+admin
+root
+user
+test
+john.doe
+jane.smith
+bob.wilson
+alice.chen
+carlos.garcia
+emma.johnson
+david.lee
+sarah.brown
+mike.taylor
+lisa.wang
+svc_backup
+svc_web
+svc_monitor
+svc_db
+sysadmin
+webmaster

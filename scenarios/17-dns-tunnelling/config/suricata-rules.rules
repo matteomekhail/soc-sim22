@@ -1,0 +1,20 @@
+# Scenario 17: DNS Tunnelling Detection Rules for Suricata
+# These rules supplement the global rules in soc-stack/suricata/rules/local.rules
+
+# Rule 1: Unusually long DNS query name (>100 bytes) - strong tunnel indicator
+alert dns any any -> any 53 (msg:"S17: DNS Tunnel - Unusually Long DNS Query (>100 chars)"; dns.query; content:"."; pcre:"/^.{100,}/"; threshold:type both, track by_src, count 5, seconds 60; sid:9170001; rev:1; classtype:bad-unknown;)
+
+# Rule 2: TXT query flood to a single domain - data exfiltration indicator
+alert dns any any -> any 53 (msg:"S17: DNS Tunnel - TXT Query Flood to Single Domain"; dns.query; content:".exfil."; nocase; threshold:type both, track by_src, count 20, seconds 60; sid:9170002; rev:1; classtype:bad-unknown;)
+
+# Rule 3: High entropy subdomain labels - base32/base64 encoded data
+alert dns any any -> any 53 (msg:"S17: DNS Tunnel - High Entropy Subdomain (Base32 Pattern)"; dns.query; pcre:"/^[a-z2-7]{20,}\./i"; threshold:type both, track by_src, count 10, seconds 60; sid:9170003; rev:1; classtype:bad-unknown;)
+
+# Rule 4: CNAME query with long subdomain - alternate tunnel channel
+alert dns any any -> any 53 (msg:"S17: DNS Tunnel - CNAME Query with Long Subdomain"; dns.query; content:".exfil."; nocase; pcre:"/^[a-z0-9]{30,}\./i"; sid:9170004; rev:1; classtype:bad-unknown;)
+
+# Rule 5: Numeric sequence prefix in DNS query - chunk sequencing pattern
+alert dns any any -> any 53 (msg:"S17: DNS Tunnel - Sequential Chunk Pattern in DNS Query"; dns.query; pcre:"/^\d{4}\.[a-z2-7]{10,}\./"; threshold:type both, track by_src, count 5, seconds 30; sid:9170005; rev:1; classtype:bad-unknown;)
+
+# Rule 6: DNS query to known tunnel domain
+alert dns any any -> any 53 (msg:"S17: DNS Tunnel - Query to Known Exfiltration Domain"; dns.query; content:"exfil.test"; nocase; sid:9170006; rev:1; classtype:trojan-activity;)

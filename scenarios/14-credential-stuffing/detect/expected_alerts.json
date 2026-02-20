@@ -1,0 +1,55 @@
+{
+  "scenario": "14-credential-stuffing",
+  "description": "Expected alerts from credential stuffing attack simulation",
+  "expected_alerts": [
+    {
+      "source": "suricata",
+      "sid": 9200001,
+      "description": "Credential Stuffing - Login flood detected",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "suricata",
+      "sid": 9200002,
+      "description": "Credential Stuffing - Multiple auth failures",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "suricata",
+      "sid": 9200003,
+      "description": "Credential Stuffing - Automated tool detected",
+      "min_count": 5,
+      "severity": "medium"
+    },
+    {
+      "source": "suricata",
+      "sid": 9200005,
+      "description": "Credential Stuffing - Successful login after failures",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100201,
+      "description": "Multiple authentication failures from same IP",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100202,
+      "description": "Credential stuffing attack confirmed",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "source": "wazuh",
+      "rule_id": 100203,
+      "description": "Account compromised after credential stuffing",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}

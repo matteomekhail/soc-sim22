@@ -1,0 +1,23 @@
+# Scenario 19: Cryptojacking Detection Rules for Suricata
+# These rules supplement the global rules in soc-stack/suricata/rules/local.rules
+
+# Mining pool HTTP/HTTPS connections
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"S19: Cryptocurrency Mining Pool HTTP Connection"; flow:to_server,established; content:"pool"; http_host; content:"mine"; http_host; nocase; sid:9190001; rev:1; classtype:policy-violation;)
+
+# CoinHive JavaScript loaded by browser
+alert http $EXTERNAL_NET any -> $HOME_NET any (msg:"S19: CoinHive Crypto Miner JS Detected"; flow:to_client,established; content:"coinhive"; nocase; content:".min.js"; nocase; distance:0; sid:9190002; rev:1; classtype:trojan-activity;)
+
+# Stratum mining protocol (JSON-RPC over TCP)
+alert tcp $HOME_NET any -> $EXTERNAL_NET 3333:3334 (msg:"S19: Stratum Mining Protocol - Login"; flow:to_server,established; content:"\"method\""; content:"\"login\""; distance:0; content:"coinhive"; nocase; distance:0; sid:9190003; rev:1; classtype:trojan-activity;)
+
+# Stratum mining protocol - job submission
+alert tcp $HOME_NET any -> $EXTERNAL_NET 3333:3334 (msg:"S19: Stratum Mining Protocol - Hash Submission"; flow:to_server,established; content:"\"method\""; content:"\"submit\""; distance:0; content:"\"nonce\""; distance:0; sid:9190004; rev:1; classtype:trojan-activity;)
+
+# Sustained beacon pattern to known mining pool IP
+alert tcp $HOME_NET any -> 203.0.113.200 any (msg:"S19: Connection to Known Mining Pool IP"; flow:to_server,established; threshold:type both, track by_src, count 5, seconds 300; sid:9190005; rev:1; classtype:policy-violation;)
+
+# WebSocket upgrade to mining pool proxy
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"S19: WebSocket Upgrade to Mining Pool Proxy"; flow:to_server,established; content:"Upgrade"; http_header; content:"websocket"; http_header; content:"proxy"; http_uri; content:"key="; http_uri; sid:9190006; rev:1; classtype:trojan-activity;)
+
+# CoinHive site key in HTTP traffic
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"S19: CoinHive Site Key Detected in Traffic"; flow:to_server,established; content:"site_key"; nocase; pcre:"/[a-zA-Z0-9]{20,}.*SimulatedKey|CoinHive\.Anonymous/i"; sid:9190007; rev:1; classtype:policy-violation;)

@@ -1,0 +1,68 @@
+<!-- Scenario 19: Cryptojacking Detection Rules for Wazuh -->
+<group name="wcace,cryptojacking,mining,">
+
+  <rule id="100600" level="10">
+    <if_group>web|accesslog</if_group>
+    <match>coinhive|cryptonight|coin-hive|minero</match>
+    <description>WCACE S19: Cryptocurrency miner script detected in web traffic</description>
+    <mitre>
+      <id>T1496</id>
+    </mitre>
+    <group>attack,cryptojacking,</group>
+  </rule>
+
+  <rule id="100601" level="10">
+    <if_group>firewall|ids</if_group>
+    <match>pool.cryptomine|mining.pool|stratum+tcp</match>
+    <description>WCACE S19: Connection to cryptocurrency mining pool detected</description>
+    <mitre>
+      <id>T1496</id>
+      <id>T1071</id>
+    </mitre>
+    <group>attack,cryptojacking,</group>
+  </rule>
+
+  <rule id="100602" level="12">
+    <if_group>ids_alert</if_group>
+    <match>Stratum Mining Protocol|stratum|mining protocol</match>
+    <description>WCACE S19: Stratum mining protocol communication detected</description>
+    <mitre>
+      <id>T1496</id>
+      <id>T1071</id>
+    </mitre>
+    <group>attack,cryptojacking,</group>
+  </rule>
+
+  <rule id="100603" level="8">
+    <if_group>sysmon|endpoint</if_group>
+    <regex>cpu_percent.*[89]\d\.\d|cpu_percent.*100\.0</regex>
+    <match>chrome.exe|firefox.exe|msedge.exe|browser</match>
+    <description>WCACE S19: Sustained high CPU usage from browser process (possible cryptojacking)</description>
+    <mitre>
+      <id>T1496</id>
+    </mitre>
+    <group>attack,cryptojacking,</group>
+  </rule>
+
+  <rule id="100604" level="12">
+    <if_group>ids_alert</if_group>
+    <match>Mining Beacon Pattern|mining beacon</match>
+    <description>WCACE S19: Sustained cryptocurrency mining beacon pattern detected</description>
+    <mitre>
+      <id>T1496</id>
+      <id>T1071</id>
+    </mitre>
+    <group>attack,cryptojacking,</group>
+  </rule>
+
+  <rule id="100605" level="14" frequency="3" timeframe="120">
+    <if_matched_group>cryptojacking</if_matched_group>
+    <description>WCACE S19: Multiple cryptojacking indicators - Active mining campaign in progress</description>
+    <mitre>
+      <id>T1496</id>
+      <id>T1071</id>
+    </mitre>
+    <group>attack,cryptojacking,</group>
+  </rule>
+
+</group>
