@@ -104,9 +104,10 @@ def safety_check():
         sys.exit(1)
 
     # Verify sandbox path does not escape via symlinks
+    # On macOS, /tmp is a symlink to /private/tmp, so we check both
     if os.path.exists(SANDBOX_ROOT):
         real = os.path.realpath(SANDBOX_ROOT)
-        if not real.startswith("/tmp/"):
+        if not (real.startswith("/tmp/") or real.startswith("/private/tmp/")):
             print(f"{Fore.RED}[SAFETY] Sandbox symlink escape detected. Aborting.{Style.RESET_ALL}")
             sys.exit(1)
 

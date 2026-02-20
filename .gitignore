@@ -41,3 +41,6 @@ emai.txt
 *.msg
 email_*.txt
 robert_beutel_email*
+
+# Test artifacts
+.pytest_cache/

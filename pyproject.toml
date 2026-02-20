@@ -1,0 +1,9 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "slow: execution tests that run scenario main()",
+    "unit: wcace_lib unit tests",
+    "structure: file and directory structure checks",
+]
+timeout = 120

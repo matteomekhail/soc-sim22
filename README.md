@@ -1,10 +1,10 @@
-# WCACE - 22 SOC Simulation Scenarios
+# SOC-Sim22 - 22 SOC Simulation Scenarios
 
-Open-source Security Operations Center (SOC) simulation platform featuring 22 real-world cybersecurity scenarios. Built for Western Sydney University's CACE program.
+Open-source Security Operations Center (SOC) simulation platform featuring 22 real-world cybersecurity scenarios for hands-on blue team training.
 
 ## Overview
 
-This project provides hands-on SOC analyst training through simulated cyber attacks and their detection using open-source tools. Each scenario includes attack simulation, detection rules, and incident response playbooks.
+This project provides practical SOC analyst training through simulated cyber attacks and their detection using open-source tools. Each scenario includes attack simulation, detection rules, and incident response playbooks.
 
 ## Architecture
 
@@ -28,7 +28,7 @@ This project provides hands-on SOC analyst training through simulated cyber atta
                       │
         ┌─────────────┴──────────────┐
         │    Attack Simulations      │
-        │   (Python + wcace_lib)     │
+        │   (Python + soc_sim_lib)   │
         └────────────────────────────┘
 ```
 
@@ -76,8 +76,8 @@ This project provides hands-on SOC analyst training through simulated cyber atta
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/wcace-soc-scenarios.git
-cd wcace-soc-scenarios
+git clone https://github.com/YOUR_USERNAME/soc-sim22.git
+cd soc-sim22
 
 # 2. Install Python dependencies
 pip3 install -r requirements.txt
@@ -95,6 +95,19 @@ cd soc-stack
 cd ../scenarios/13-sql-injection-database
 python3 attack/simulate_attack.py
 python3 detect/verify_detection.py
+```
+
+## Testing
+
+```bash
+# Run the full test suite (640 tests)
+pytest tests/ -v --timeout=120
+
+# Run only execution tests
+pytest tests/test_scenario_execution.py -v --timeout=30
+
+# Run only library unit tests
+pytest tests/test_wcace_lib/ -v
 ```
 
 ## On-Demand Services
@@ -121,9 +134,10 @@ docker compose --profile dns up -d
 ## Project Structure
 
 ```
-WCACE/
+soc-sim22/
 ├── README.md                   # This file
 ├── requirements.txt            # Python dependencies
+├── pyproject.toml              # Pytest configuration
 ├── soc-stack/                  # Docker-based SOC infrastructure
 │   ├── docker-compose.yml
 │   └── scripts/
@@ -132,6 +146,12 @@ WCACE/
 │   ├── siem_client.py          # Log forwarding to Wazuh/Loki
 │   ├── network_sim.py          # Network traffic simulation
 │   └── email_sim.py            # Email mock generation
+├── tests/                      # Automated test suite (640 tests)
+│   ├── test_wcace_lib/         # Library unit tests
+│   ├── test_scenario_structure.py
+│   ├── test_scenario_imports.py
+│   ├── test_scenario_execution.py
+│   └── test_cross_scenario.py
 └── scenarios/
     ├── 01-apt-deepfake-ceo/
     ├── ...
@@ -148,4 +168,4 @@ Each scenario directory contains:
 
 ## License
 
-This project is for educational purposes as part of the WCACE program at Western Sydney University.
+This project is for educational purposes only.
