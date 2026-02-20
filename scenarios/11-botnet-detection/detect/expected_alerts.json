@@ -1,0 +1,126 @@
+{
+  "scenario": "11-botnet-detection",
+  "description": "Expected alerts from botnet detection simulation - propagation, C2 beaconing, DDoS, and credential theft",
+  "expected_alerts": [
+    {
+      "phase": "propagation",
+      "source": "wazuh",
+      "rule_id": 100480,
+      "description": "Worm-like SMB propagation across workstations",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "propagation",
+      "source": "suricata",
+      "sid": 9110001,
+      "description": "Worm propagation via SMB - multiple internal hosts targeted",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "registration",
+      "source": "wazuh",
+      "rule_id": 100481,
+      "description": "Bot registration with C2 server detected",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "registration",
+      "source": "suricata",
+      "sid": 9110002,
+      "description": "Botnet C2 registration - system info sent to external server",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "beaconing",
+      "source": "wazuh",
+      "rule_id": 100482,
+      "description": "Coordinated C2 beaconing from multiple internal hosts",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "beaconing",
+      "source": "suricata",
+      "sid": 9110003,
+      "description": "Coordinated C2 beaconing pattern detected",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "tasking",
+      "source": "wazuh",
+      "rule_id": 100483,
+      "description": "Bot tasking commands received from C2 server",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "ddos",
+      "source": "wazuh",
+      "rule_id": 100484,
+      "description": "DDoS traffic generation from internal host",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "ddos",
+      "source": "wazuh",
+      "rule_id": 100485,
+      "description": "Coordinated DDoS attack from botnet",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "ddos",
+      "source": "suricata",
+      "sid": 9110004,
+      "description": "DDoS SYN flood from internal host",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "data_theft",
+      "source": "wazuh",
+      "rule_id": 100486,
+      "description": "Credential harvesting by bot detected",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "data_theft",
+      "source": "wazuh",
+      "rule_id": 100487,
+      "description": "Bot exfiltrating stolen data to C2 server",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "persistence",
+      "source": "wazuh",
+      "rule_id": 100488,
+      "description": "Bot persistence mechanism installed via scheduled task",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "data_theft",
+      "source": "suricata",
+      "sid": 9110005,
+      "description": "Botnet data exfiltration to C2 server",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "kill_chain",
+      "source": "wazuh",
+      "rule_id": 100489,
+      "description": "Botnet campaign correlated -- propagation, C2, DDoS, and data theft",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}

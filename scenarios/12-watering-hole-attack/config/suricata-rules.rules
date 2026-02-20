@@ -1,0 +1,22 @@
+# Scenario 12: Watering Hole Attack Detection Rules for Suricata
+# These rules supplement the global rules in soc-stack/suricata/rules/local.rules
+
+# --- Phase 1: Website Compromise Detection ---
+
+alert http $EXTERNAL_NET any -> any any (msg:"S12: Suspicious web application modification from external IP"; flow:to_server,established; content:"POST"; http_method; content:"theme-editor"; http_uri; sid:9120001; rev:1; classtype:web-application-attack;)
+
+# --- Phase 3: Browser Exploit Kit Delivery ---
+
+alert http any any -> $HOME_NET any (msg:"S12: Browser exploit kit delivery detected (drive-by download)"; flow:to_client,established; content:"Content-Type"; http_header; content:"application/javascript"; http_header; pcre:"/eval\s*\(|document\.write|unescape|fromCharCode/i"; sid:9120002; rev:1; classtype:trojan-activity;)
+
+# --- Phase 4: C2 Communication from Compromised Host ---
+
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"S12: Watering hole payload C2 beacon detected"; flow:to_server,established; content:"updates.evil-cdn.test"; tls.sni; sid:9120003; rev:1; classtype:trojan-activity;)
+
+# --- Phase 5: Post-Exploitation Reconnaissance ---
+
+alert tcp $HOME_NET any -> $HOME_NET any (msg:"S12: Post-exploitation reconnaissance from compromised host"; flow:to_server,established; content:"net"; content:"domain"; within:20; sid:9120004; rev:1; classtype:attempted-recon;)
+
+# --- Phase 5: Data Exfiltration to C2 ---
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 443 (msg:"S12: Suspicious data exfiltration to C2 - large TLS upload"; flow:to_server,established; dsize:>5000; detection_filter:track by_src, count 3, seconds 120; sid:9120005; rev:1; classtype:trojan-activity;)

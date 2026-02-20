@@ -1,0 +1,22 @@
+# Scenario 11: Botnet Detection Rules for Suricata
+# These rules supplement the global rules in soc-stack/suricata/rules/local.rules
+
+# --- Botnet Propagation ---
+
+alert tcp $HOME_NET any -> $HOME_NET 445 (msg:"S11: Worm propagation via SMB - multiple internal hosts targeted"; flow:to_server,established; content:"|ff|SMB"; detection_filter:track by_src, count 5, seconds 60; sid:9110001; rev:1; classtype:trojan-activity;)
+
+# --- Botnet C2 Registration ---
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 443 (msg:"S11: Botnet C2 registration - host sending system info to external server"; flow:to_server,established; content:"POST"; content:"/api/v1/register"; sid:9110002; rev:1; classtype:trojan-activity;)
+
+# --- Botnet C2 Beaconing ---
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 443 (msg:"S11: Coordinated C2 beaconing - multiple internal hosts contacting same external server"; flow:to_server,established; content:"/api/v1/heartbeat"; detection_filter:track by_dst, count 4, seconds 120; sid:9110003; rev:1; classtype:trojan-activity;)
+
+# --- DDoS Attack Traffic ---
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"S11: DDoS SYN flood - high rate SYN packets from internal host"; flags:S; threshold:type both, track by_src, count 100, seconds 10; sid:9110004; rev:1; classtype:attempted-dos;)
+
+# --- Botnet Data Exfiltration ---
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 443 (msg:"S11: Botnet data exfiltration - multiple internal hosts uploading to C2 server"; flow:to_server,established; content:"POST"; content:"/api/v1/upload"; detection_filter:track by_dst, count 3, seconds 120; sid:9110005; rev:1; classtype:trojan-activity;)

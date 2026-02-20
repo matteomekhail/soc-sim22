@@ -1,0 +1,71 @@
+{
+  "incident_id": "INC-20260220-152803-WATERINGHOLE",
+  "type": "Watering Hole Attack",
+  "severity": "CRITICAL",
+  "timestamp": "2026-02-20T15:28:03.747711",
+  "attacker_ip": "203.0.113.50",
+  "c2_server": "203.0.113.100",
+  "compromised_website": "news-portal.test",
+  "compromised_hosts": [
+    "10.0.0.104"
+  ],
+  "all_visitors": [
+    "10.0.0.100",
+    "10.0.0.101",
+    "10.0.0.102",
+    "10.0.0.103",
+    "10.0.0.104"
+  ],
+  "mitre_techniques": [
+    "T1189",
+    "T1203",
+    "T1547.001",
+    "T1071.001",
+    "T1082",
+    "T1003.001"
+  ],
+  "containment_actions": [
+    "Compromised website (news-portal.test) blocked at DNS/proxy",
+    "C2 server (203.0.113.100) blocked at perimeter firewall",
+    "Attacker IP (203.0.113.50) blocked at perimeter",
+    "1 compromised host(s) isolated from network",
+    "5 visitor host(s) queued for IOC scan",
+    "Persistence mechanisms (registry run keys) removal commands generated",
+    "Payload removal commands generated"
+  ],
+  "evidence_files": [
+    "/Users/xell/22 Projects/scenarios/12-watering-hole-attack/respond/../logs/sample_logs/phase1_website_compromise.jsonl",
+    "/Users/xell/22 Projects/scenarios/12-watering-hole-attack/respond/../logs/sample_logs/phase4_payload_execution.jsonl",
+    "/Users/xell/22 Projects/scenarios/12-watering-hole-attack/respond/../logs/sample_logs/phase5_post_exploitation.jsonl",
+    "/Users/xell/22 Projects/scenarios/12-watering-hole-attack/respond/../logs/sample_logs/phase3_browser_exploit.jsonl",
+    "/Users/xell/22 Projects/scenarios/12-watering-hole-attack/respond/../logs/sample_logs/watering_hole_attack.jsonl",
+    "/Users/xell/22 Projects/scenarios/12-watering-hole-attack/respond/../logs/sample_logs/phase2_victim_browsing.jsonl"
+  ],
+  "ioc_indicators": {
+    "ip_addresses": [
+      "203.0.113.50",
+      "203.0.113.100",
+      "198.51.100.25"
+    ],
+    "domains": [
+      "news-portal.test",
+      "updates.evil-cdn.test"
+    ],
+    "file_names": [
+      "msedge_update.exe"
+    ],
+    "file_hashes": [
+      "b3a4f7e2c1d80000000000000000000000000000000000000000000000000000"
+    ],
+    "registry_keys": [
+      "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\EdgeUpdate"
+    ],
+    "cve": [
+      "CVE-2024-4761"
+    ],
+    "urls": [
+      "https://news-portal.test/assets/js/analytics-v3.min.js",
+      "https://news-portal.test/api/v2/content/feed"
+    ]
+  }
+}

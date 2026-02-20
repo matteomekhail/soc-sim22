@@ -1,0 +1,116 @@
+<!-- Scenario 12: Watering Hole Attack Detection Rules for Wazuh -->
+<group name="wcace,watering_hole,">
+
+  <!-- Phase 1: Website compromise detection -->
+  <rule id="100500" level="10">
+    <if_group>web</if_group>
+    <match>theme-editor|web_modification|injected_malicious_script</match>
+    <description>WCACE S12: Suspicious web application modification detected - possible watering hole setup</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>watering_hole,web_compromise,</group>
+  </rule>
+
+  <!-- Phase 2: Multiple employees visiting known compromised site -->
+  <rule id="100501" level="8" frequency="3" timeframe="600">
+    <if_group>web</if_group>
+    <match>news-portal.test</match>
+    <description>WCACE S12: Multiple employees visiting suspected watering hole site</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>watering_hole,reconnaissance,</group>
+  </rule>
+
+  <!-- Phase 3: Browser exploit detected -->
+  <rule id="100502" level="14">
+    <match>browser_exploit|exploit_kit|CVE-2024</match>
+    <description>WCACE S12: Browser exploitation attempt detected - drive-by compromise</description>
+    <mitre>
+      <id>T1203</id>
+    </mitre>
+    <group>watering_hole,exploitation,</group>
+  </rule>
+
+  <!-- Phase 3: Drive-by download of suspicious payload -->
+  <rule id="100503" level="12">
+    <match>file_download|drive-by</match>
+    <regex>\.exe|\.dll|\.scr|\.bat</regex>
+    <description>WCACE S12: Suspicious file downloaded via drive-by from compromised website</description>
+    <mitre>
+      <id>T1189</id>
+      <id>T1203</id>
+    </mitre>
+    <group>watering_hole,malware_delivery,</group>
+  </rule>
+
+  <!-- Phase 4: Persistence via registry run key -->
+  <rule id="100504" level="12">
+    <if_group>syscheck</if_group>
+    <match>registry_modification|CurrentVersion\\Run</match>
+    <description>WCACE S12: Persistence mechanism detected - registry run key added by watering hole payload</description>
+    <mitre>
+      <id>T1547.001</id>
+    </mitre>
+    <group>watering_hole,persistence,</group>
+  </rule>
+
+  <!-- Phase 4: C2 communication from compromised host -->
+  <rule id="100505" level="13">
+    <if_group>firewall</if_group>
+    <match>203.0.113.100</match>
+    <description>WCACE S12: Communication with C2 server from watering hole compromised host</description>
+    <mitre>
+      <id>T1071.001</id>
+    </mitre>
+    <group>watering_hole,c2,</group>
+  </rule>
+
+  <!-- Phase 5: System reconnaissance commands -->
+  <rule id="100506" level="10">
+    <if_group>process_monitor</if_group>
+    <match>systeminfo|whoami|net user|net group|ipconfig|tasklist</match>
+    <description>WCACE S12: System reconnaissance commands executed on compromised host</description>
+    <mitre>
+      <id>T1082</id>
+    </mitre>
+    <group>watering_hole,discovery,</group>
+  </rule>
+
+  <!-- Phase 5: Credential harvesting (LSASS dump) -->
+  <rule id="100507" level="14">
+    <if_group>process_monitor</if_group>
+    <match>comsvcs.dll|MiniDump|lsass</match>
+    <description>WCACE S12: Credential harvesting detected - LSASS memory dump on compromised host</description>
+    <mitre>
+      <id>T1003.001</id>
+    </mitre>
+    <group>watering_hole,credential_access,</group>
+  </rule>
+
+  <!-- Phase 5: Data exfiltration over C2 channel -->
+  <rule id="100508" level="13">
+    <if_group>firewall</if_group>
+    <match>data_exfiltration|203.0.113.100</match>
+    <description>WCACE S12: Data exfiltration to C2 server from watering hole compromised host</description>
+    <mitre>
+      <id>T1041</id>
+    </mitre>
+    <group>watering_hole,exfiltration,</group>
+  </rule>
+
+  <!-- Correlation: Full watering hole kill chain -->
+  <rule id="100509" level="15" frequency="3" timeframe="600">
+    <if_matched_group>watering_hole</if_matched_group>
+    <description>WCACE S12: Watering hole attack kill chain detected - compromise to post-exploitation</description>
+    <mitre>
+      <id>T1189</id>
+      <id>T1203</id>
+      <id>T1547.001</id>
+      <id>T1071.001</id>
+    </mitre>
+    <group>watering_hole,kill_chain,</group>
+  </rule>
+
+</group>

@@ -1,0 +1,126 @@
+{
+  "scenario": "12-watering-hole-attack",
+  "description": "Expected alerts from watering hole attack simulation: website compromise, browser exploitation, C2 communication, and post-exploitation reconnaissance",
+  "expected_alerts": [
+    {
+      "phase": "website_compromise",
+      "source": "suricata",
+      "sid": 9120001,
+      "description": "Suspicious web application modification from external IP",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "browser_exploitation",
+      "source": "suricata",
+      "sid": 9120002,
+      "description": "Browser exploit kit delivery detected (drive-by download)",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "c2_communication",
+      "source": "suricata",
+      "sid": 9120003,
+      "description": "Watering hole payload C2 beacon detected",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "post_exploitation",
+      "source": "suricata",
+      "sid": 9120004,
+      "description": "Post-exploitation reconnaissance from compromised host",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "data_exfiltration",
+      "source": "suricata",
+      "sid": 9120005,
+      "description": "Suspicious data exfiltration to C2 - large TLS upload",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "website_compromise",
+      "source": "wazuh",
+      "rule_id": 100500,
+      "description": "Suspicious web application modification detected",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "victim_browsing",
+      "source": "wazuh",
+      "rule_id": 100501,
+      "description": "Multiple employees visiting suspected watering hole site",
+      "min_count": 1,
+      "severity": "medium"
+    },
+    {
+      "phase": "browser_exploitation",
+      "source": "wazuh",
+      "rule_id": 100502,
+      "description": "Browser exploitation attempt detected - drive-by compromise",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "browser_exploitation",
+      "source": "wazuh",
+      "rule_id": 100503,
+      "description": "Suspicious file downloaded via drive-by",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "persistence",
+      "source": "wazuh",
+      "rule_id": 100504,
+      "description": "Persistence mechanism - registry run key added",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "c2_communication",
+      "source": "wazuh",
+      "rule_id": 100505,
+      "description": "Communication with C2 server from compromised host",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "post_exploitation",
+      "source": "wazuh",
+      "rule_id": 100506,
+      "description": "System reconnaissance commands on compromised host",
+      "min_count": 1,
+      "severity": "high"
+    },
+    {
+      "phase": "post_exploitation",
+      "source": "wazuh",
+      "rule_id": 100507,
+      "description": "Credential harvesting - LSASS memory dump",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "data_exfiltration",
+      "source": "wazuh",
+      "rule_id": 100508,
+      "description": "Data exfiltration to C2 server",
+      "min_count": 1,
+      "severity": "critical"
+    },
+    {
+      "phase": "kill_chain",
+      "source": "wazuh",
+      "rule_id": 100509,
+      "description": "Watering hole attack kill chain detected",
+      "min_count": 1,
+      "severity": "critical"
+    }
+  ]
+}

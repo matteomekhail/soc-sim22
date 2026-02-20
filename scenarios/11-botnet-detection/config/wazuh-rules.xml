@@ -1,0 +1,120 @@
+<!-- Scenario 11: Botnet Detection Rules for Wazuh -->
+<group name="wcace,botnet,">
+
+  <!-- Propagation: Worm-like SMB exploitation across workstations -->
+  <rule id="100480" level="10">
+    <if_group>syslog</if_group>
+    <match>smb_exploitation|SMB exploitation|worm propagation</match>
+    <description>WCACE S11: Worm-like SMB propagation detected across workstations</description>
+    <mitre>
+      <id>T1210</id>
+    </mitre>
+    <group>botnet,propagation,</group>
+  </rule>
+
+  <!-- Registration: Bot registration with C2 server -->
+  <rule id="100481" level="10">
+    <if_group>syslog</if_group>
+    <match>/api/v1/register|bot registration|bot_id</match>
+    <description>WCACE S11: Bot registration with C2 server detected</description>
+    <mitre>
+      <id>T1583.005</id>
+      <id>T1082</id>
+    </mitre>
+    <group>botnet,registration,</group>
+  </rule>
+
+  <!-- Beaconing: Coordinated C2 beaconing from multiple hosts -->
+  <rule id="100482" level="12" frequency="4" timeframe="300">
+    <if_matched_group>botnet</if_matched_group>
+    <same_dst_ip />
+    <description>WCACE S11: Coordinated C2 beaconing from multiple internal hosts</description>
+    <mitre>
+      <id>T1071.001</id>
+    </mitre>
+    <group>botnet,beaconing,</group>
+  </rule>
+
+  <!-- Tasking: Bot tasking commands received from C2 -->
+  <rule id="100483" level="12">
+    <if_group>syslog</if_group>
+    <match>c2_tasking|task_pending|tasks_received</match>
+    <description>WCACE S11: Bot tasking commands received from C2 server</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>botnet,tasking,</group>
+  </rule>
+
+  <!-- DDoS: Individual host generating DDoS traffic -->
+  <rule id="100484" level="12">
+    <if_group>syslog</if_group>
+    <match>ddos_syn_flood|ddos_http_flood|DDoS traffic</match>
+    <description>WCACE S11: DDoS traffic generation from internal host</description>
+    <mitre>
+      <id>T1498</id>
+    </mitre>
+    <group>botnet,ddos,</group>
+  </rule>
+
+  <!-- DDoS: Coordinated DDoS from botnet (multiple hosts same target) -->
+  <rule id="100485" level="14" frequency="3" timeframe="120">
+    <if_matched_sid>100484</if_matched_sid>
+    <same_dst_ip />
+    <description>WCACE S11: Coordinated DDoS attack from botnet -- multiple hosts flooding same target</description>
+    <mitre>
+      <id>T1498</id>
+      <id>T1583.005</id>
+    </mitre>
+    <group>botnet,ddos,coordinated,</group>
+  </rule>
+
+  <!-- Credential Harvesting: Bot scraping credentials -->
+  <rule id="100486" level="12">
+    <if_group>syslog</if_group>
+    <match>credential_harvest|credentials_found|credential store</match>
+    <description>WCACE S11: Credential harvesting by bot detected</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>botnet,credential_harvest,</group>
+  </rule>
+
+  <!-- Data Exfiltration: Bot sending stolen data to C2 -->
+  <rule id="100487" level="13">
+    <if_group>syslog</if_group>
+    <match>data_exfiltration|/api/v1/upload|exfiltrating</match>
+    <description>WCACE S11: Bot exfiltrating stolen data to C2 server</description>
+    <mitre>
+      <id>T1041</id>
+    </mitre>
+    <group>botnet,exfiltration,</group>
+  </rule>
+
+  <!-- Persistence: Bot installing persistence mechanism -->
+  <rule id="100488" level="12">
+    <if_group>syslog</if_group>
+    <match>persistence_install|scheduled_task|WindowsUpdateService</match>
+    <description>WCACE S11: Bot persistence mechanism installed via scheduled task</description>
+    <mitre>
+      <id>T1053</id>
+    </mitre>
+    <group>botnet,persistence,</group>
+  </rule>
+
+  <!-- Correlation: Full botnet campaign detected -->
+  <rule id="100489" level="15" frequency="4" timeframe="600">
+    <if_matched_group>botnet</if_matched_group>
+    <description>WCACE S11: Botnet campaign correlated -- propagation, C2, DDoS, and data theft detected</description>
+    <mitre>
+      <id>T1583.005</id>
+      <id>T1071.001</id>
+      <id>T1498</id>
+      <id>T1059</id>
+      <id>T1082</id>
+      <id>T1210</id>
+    </mitre>
+    <group>botnet,kill_chain,</group>
+  </rule>
+
+</group>
